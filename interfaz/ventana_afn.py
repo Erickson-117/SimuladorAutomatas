@@ -605,17 +605,61 @@ class VentanaAFN:
 
         try:
 
+            # ==========================================
+            # ESTADOS
+            # ==========================================
+
+            texto_estados = (
+                self.entrada_estados
+                .get()
+                .strip()
+            )
+
+            if not texto_estados:
+                raise ValueError(
+                    "Debe ingresar al menos un estado."
+                )
+
             estados = {
                 estado.strip()
-                for estado in self.entrada_estados.get().split(",")
+                for estado in texto_estados.split(",")
                 if estado.strip()
             }
 
+            if not estados:
+                raise ValueError(
+                    "Debe ingresar al menos un estado válido."
+                )
+
+            # ==========================================
+            # ALFABETO
+            # ==========================================
+
+            texto_alfabeto = (
+                self.entrada_alfabeto
+                .get()
+                .strip()
+            )
+
+            if not texto_alfabeto:
+                raise ValueError(
+                    "El alfabeto no puede estar vacío."
+                )
+
             alfabeto = {
                 simbolo.strip()
-                for simbolo in self.entrada_alfabeto.get().split(",")
+                for simbolo in texto_alfabeto.split(",")
                 if simbolo.strip()
             }
+
+            if not alfabeto:
+                raise ValueError(
+                    "Debe ingresar al menos un símbolo válido."
+                )
+
+            # ==========================================
+            # ESTADO INICIAL
+            # ==========================================
 
             estado_inicial = (
                 self.entrada_inicial
@@ -623,11 +667,55 @@ class VentanaAFN:
                 .strip()
             )
 
+            if not estado_inicial:
+                raise ValueError(
+                    "Debe ingresar el estado inicial."
+                )
+
+            if estado_inicial not in estados:
+                raise ValueError(
+                    f"El estado inicial '{estado_inicial}' "
+                    "no pertenece al conjunto de estados."
+                )
+
+            # ==========================================
+            # ESTADOS FINALES
+            # ==========================================
+
+            texto_finales = (
+                self.entrada_finales
+                .get()
+                .strip()
+            )
+
+            if not texto_finales:
+                raise ValueError(
+                    "Debe ingresar al menos un estado final."
+                )
+
             estados_finales = {
                 estado.strip()
-                for estado in self.entrada_finales.get().split(",")
+                for estado in texto_finales.split(",")
                 if estado.strip()
             }
+
+            estados_finales_invalidos = (
+                estados_finales - estados
+            )
+
+            if estados_finales_invalidos:
+
+                raise ValueError(
+                    "Los siguientes estados finales "
+                    "no existen:\n\n"
+                    + ", ".join(
+                        sorted(estados_finales_invalidos)
+                    )
+                )
+
+            # ==========================================
+            # TRANSICIONES
+            # ==========================================
 
             texto_transiciones = (
                 self.entrada_transiciones
@@ -635,45 +723,131 @@ class VentanaAFN:
                 .strip()
             )
 
+            if not texto_transiciones:
+
+                raise ValueError(
+                    "Debe ingresar las transiciones "
+                    "del AFN."
+                )
+
             transiciones = {}
 
-            if texto_transiciones:
+            for numero_linea, linea in enumerate(
+                texto_transiciones.splitlines(),
+                start=1
+            ):
 
-                for linea in texto_transiciones.splitlines():
+                linea = linea.strip()
 
-                    linea = linea.strip()
+                # Ignorar líneas vacías
+                if not linea:
+                    continue
 
-                    if not linea:
-                        continue
+                partes = [
+                    parte.strip()
+                    for parte in linea.split(",")
+                ]
 
-                    partes = [
-                        parte.strip()
-                        for parte in linea.split(",")
-                    ]
+                # --------------------------------------
+                # FORMATO
+                # --------------------------------------
 
-                    if len(partes) != 3:
+                if len(partes) != 3:
 
-                        raise ValueError(
-                            f"Transición inválida:\n\n"
-                            f"{linea}\n\n"
-                            "Use el formato:\n"
-                            "estado,símbolo,destino"
-                        )
-
-                    origen, simbolo, destino = partes
-
-                    clave = (
-                        origen,
-                        simbolo
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        f"{linea}\n\n"
+                        "Formato correcto:\n"
+                        "estado,símbolo,destino"
                     )
 
-                    if clave not in transiciones:
+                origen, simbolo, destino = partes
 
-                        transiciones[clave] = set()
+                # --------------------------------------
+                # CAMPOS VACÍOS
+                # --------------------------------------
 
-                    transiciones[clave].add(
-                        destino
+                if not origen:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        "El estado de origen está vacío."
                     )
+
+                if not simbolo:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        "El símbolo está vacío."
+                    )
+
+                if not destino:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        "El estado destino está vacío."
+                    )
+
+                # --------------------------------------
+                # ESTADO DE ORIGEN
+                # --------------------------------------
+
+                if origen not in estados:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        f"El estado de origen '{origen}' "
+                        "no existe."
+                    )
+
+                # --------------------------------------
+                # SÍMBOLO
+                # --------------------------------------
+                #
+                # En un AFN se permite ε como transición
+                # aunque no forme parte del alfabeto.
+                #
+                if simbolo != "ε" and simbolo not in alfabeto:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        f"El símbolo '{simbolo}' "
+                        "no pertenece al alfabeto.\n\n"
+                        "Para una transición epsilon use: ε"
+                    )
+
+                # --------------------------------------
+                # ESTADO DESTINO
+                # --------------------------------------
+
+                if destino not in estados:
+
+                    raise ValueError(
+                        f"Error en la línea {numero_linea}:\n\n"
+                        f"El estado destino '{destino}' "
+                        "no existe."
+                    )
+
+                # --------------------------------------
+                # AGREGAR TRANSICIÓN
+                # --------------------------------------
+
+                clave = (
+                    origen,
+                    simbolo
+                )
+
+                if clave not in transiciones:
+
+                    transiciones[clave] = set()
+
+                transiciones[clave].add(
+                    destino
+                )
+
+            # ==========================================
+            # CREAR AFN
+            # ==========================================
 
             self.afn = AFN(
                 estados,
@@ -682,6 +856,10 @@ class VentanaAFN:
                 estados_finales,
                 transiciones
             )
+
+            # ==========================================
+            # ÉXITO
+            # ==========================================
 
             self.resultado.config(
                 text="✓ AFN creado correctamente.",
@@ -698,6 +876,10 @@ class VentanaAFN:
             )
 
             self.limpiar_recorrido()
+
+        # ==============================================
+        # ERROR
+        # ==============================================
 
         except ValueError as error:
 
