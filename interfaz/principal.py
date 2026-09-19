@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from interfaz.ventana_afd import VentanaAFD
+from interfaz.ventana_afn import VentanaAFN
 
 
 class Aplicacion:
@@ -47,7 +48,8 @@ class Aplicacion:
         boton_afn = ttk.Button(
             marco,
             text="Crear AFN",
-            width=25
+            width=25,
+            command=lambda: VentanaAFN(self.ventana)
         )
 
         boton_afn.grid(row=0, column=1, padx=20, pady=10)
