@@ -1,5 +1,6 @@
 from modelos.afd import AFD
 from modelos.afn import AFN
+from algoritmos.conversion import convertir_afn_a_afd
 
 
 def test_afd_acepta_cadena_correcta():
@@ -72,3 +73,53 @@ def test_afn_con_epsilon():
 
     assert afn.simular("01") is True
     assert afn.simular("0") is False
+
+
+def test_conversion_afn_a_afd():
+
+    estados = {
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+    }
+
+    alfabeto = {
+        "0",
+        "1"
+    }
+
+    estado_inicial = "q0"
+
+    estados_finales = {
+        "q3"
+    }
+
+    transiciones = {
+
+        ("q0", "ε"): {
+            "q1"
+        },
+
+        ("q1", "0"): {
+            "q2"
+        },
+
+        ("q2", "1"): {
+            "q3"
+        }
+    }
+
+    afn = AFN(
+        estados,
+        alfabeto,
+        estado_inicial,
+        estados_finales,
+        transiciones
+    )
+
+    afd = convertir_afn_a_afd(afn)
+
+    assert afd.simular("01")
+
+    assert not afd.simular("0")

@@ -7,7 +7,7 @@ from interfaz.visualizador import Visualizador
 
 class VentanaAFD:
 
-    def __init__(self, ventana_padre):
+    def __init__(self, ventana_padre, afd=None):
 
         self.ventana = tk.Toplevel(ventana_padre)
 
@@ -15,10 +15,13 @@ class VentanaAFD:
         self.ventana.geometry("1100x720")
         self.ventana.minsize(950, 620)
 
-        self.afd = None
+        self.afd = afd
 
         self.configurar_estilos()
         self.crear_interfaz()
+
+        if self.afd is not None:
+            self.cargar_afd()
 
     # ==========================================================
     # ESTILOS
@@ -594,6 +597,111 @@ class VentanaAFD:
         )
 
         return entrada
+
+    # ==========================================================
+    # CARGAR AFD
+    # ==========================================================
+
+    def cargar_afd(self):
+
+        if self.afd is None:
+            return
+
+        # ==========================================
+        # ESTADOS
+        # ==========================================
+
+        self.entrada_estados.delete(0, tk.END)
+
+        self.entrada_estados.insert(
+            0,
+            ", ".join(
+                sorted(self.afd.estados)
+            )
+        )
+
+        # ==========================================
+        # ALFABETO
+        # ==========================================
+
+        self.entrada_alfabeto.delete(0, tk.END)
+
+        self.entrada_alfabeto.insert(
+            0,
+            ", ".join(
+                sorted(self.afd.alfabeto)
+            )
+        )
+
+        # ==========================================
+        # ESTADO INICIAL
+        # ==========================================
+
+        self.entrada_inicial.delete(0, tk.END)
+
+        self.entrada_inicial.insert(
+            0,
+            self.afd.estado_inicial
+        )
+
+        # ==========================================
+        # ESTADOS FINALES
+        # ==========================================
+
+        self.entrada_finales.delete(0, tk.END)
+
+        self.entrada_finales.insert(
+            0,
+            ", ".join(
+                sorted(self.afd.estados_finales)
+            )
+        )
+
+        # ==========================================
+        # TRANSICIONES
+        # ==========================================
+
+        self.entrada_transiciones.delete(
+            "1.0",
+            tk.END
+        )
+
+        for (origen, simbolo), destino in sorted(
+            self.afd.transiciones.items()
+        ):
+
+            self.entrada_transiciones.insert(
+                tk.END,
+                f"{origen},{simbolo},{destino}\n"
+            )
+
+        # ==========================================
+        # MENSAJE
+        # ==========================================
+
+        self.resultado.config(
+            text="✓ AFD convertido correctamente.",
+            fg="#218c74"
+        )
+
+        # ==========================================
+        # HABILITAR VISUALIZACIÓN
+        # ==========================================
+
+        self.boton_visualizar.config(
+            state="normal"
+        )
+
+        # ==========================================
+        # LIMPIAR SIMULACIÓN ANTERIOR
+        # ==========================================
+
+        self.resultado_simulacion.config(
+            text="Aún no se ha probado ninguna cadena.",
+            fg="#34495e"
+        )
+
+        self.limpiar_recorrido()
 
     # ==========================================================
     # CREAR AFD

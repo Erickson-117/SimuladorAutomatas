@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from modelos.afn import AFN
+from algoritmos.conversion import convertir_afn_a_afd
 from interfaz.visualizador import Visualizador
+from interfaz.ventana_afd import VentanaAFD
 
 
 class VentanaAFN:
@@ -336,6 +338,19 @@ class VentanaAFN:
 
         self.boton_visualizar.pack(
             side="left"
+        )
+
+        self.boton_convertir = ttk.Button(
+            botones,
+            text="Convertir a AFD",
+            style="Secundario.TButton",
+            command=self.convertir_a_afd,
+            state="disabled"
+        )
+
+        self.boton_convertir.pack(
+            side="left",
+            padx=(8, 0)
         )
 
         self.resultado = tk.Label(
@@ -870,6 +885,10 @@ class VentanaAFN:
                 state="normal"
             )
 
+            self.boton_convertir.config(
+                state="normal"
+            )
+
             self.resultado_simulacion.config(
                 text="Aún no se ha probado ninguna cadena.",
                 fg="#34495e"
@@ -889,6 +908,10 @@ class VentanaAFN:
                 state="disabled"
             )
 
+            self.boton_convertir.config(
+                state="disabled"
+            )
+
             self.resultado.config(
                 text="✗ Error al crear el AFN.",
                 fg="#c0392b"
@@ -897,6 +920,51 @@ class VentanaAFN:
             messagebox.showerror(
                 "Error al crear AFN",
                 str(error)
+            )
+
+    # ==========================================================
+    # CONVERTIR AFN A AFD
+    # ==========================================================
+
+    def convertir_a_afd(self):
+
+        if self.afn is None:
+
+            messagebox.showwarning(
+                "Advertencia",
+                "Primero debe crear el AFN."
+            )
+
+            return
+
+        try:
+
+            afd_convertido = convertir_afn_a_afd(
+                self.afn
+            )
+
+            ventana_afd = VentanaAFD(
+                self.ventana,
+                afd_convertido
+            )
+
+            # Evitar que Python elimine la referencia
+            # de la ventana inmediatamente.
+            self.ventana_afd_convertida = ventana_afd
+
+        except ValueError as error:
+
+            messagebox.showerror(
+                "Error en la conversión",
+                str(error)
+            )
+
+        except Exception as error:
+
+            messagebox.showerror(
+                "Error",
+                f"No fue posible convertir el AFN a AFD.\n\n"
+                f"{error}"
             )
 
     # ==========================================================
