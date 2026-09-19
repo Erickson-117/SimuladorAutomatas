@@ -124,7 +124,8 @@ class VentanaAFD:
 
         ayuda = ttk.Label(
             formulario,
-            text="Formato: estado,símbolo,destino\nEjemplo: q0,0,q1"
+            text="Formato: estado,símbolo,destino\n"
+                 "Ejemplo: q0,0,q1"
         )
 
         ayuda.grid(
@@ -148,7 +149,7 @@ class VentanaAFD:
             pady=20
         )
 
-        # Resultado
+        # Resultado de creación
         self.resultado = ttk.Label(
             self.ventana,
             text=""
@@ -162,7 +163,10 @@ class VentanaAFD:
             orient="horizontal"
         ).pack(fill="x", padx=30, pady=15)
 
-        # Simulación
+        # ==========================
+        # SIMULACIÓN
+        # ==========================
+
         ttk.Label(
             self.ventana,
             text="SIMULAR CADENA",
@@ -190,6 +194,24 @@ class VentanaAFD:
         )
 
         self.resultado_simulacion.pack(pady=10)
+
+        # Recorrido
+        ttk.Label(
+            self.ventana,
+            text="RECORRIDO DE LA SIMULACIÓN",
+            font=("Arial", 11, "bold")
+        ).pack(pady=(10, 5))
+
+        self.ventana_recorrido = tk.Text(
+            self.ventana,
+            width=70,
+            height=8
+        )
+
+        self.ventana_recorrido.pack(
+            padx=30,
+            pady=5
+        )
 
     def crear_afd(self):
 
@@ -223,6 +245,7 @@ class VentanaAFD:
             transiciones = {}
 
             if texto_transiciones:
+
                 for linea in texto_transiciones.splitlines():
 
                     partes = [
@@ -264,6 +287,11 @@ class VentanaAFD:
                 text=""
             )
 
+            self.ventana_recorrido.delete(
+                "1.0",
+                tk.END
+            )
+
         except ValueError as error:
 
             self.afd = None
@@ -276,24 +304,40 @@ class VentanaAFD:
     def simular(self):
 
         if self.afd is None:
+
             messagebox.showwarning(
                 "Advertencia",
                 "Primero debe crear el AFD."
             )
+
             return
 
         cadena = self.entrada_cadena.get()
 
-        aceptada = self.afd.simular(cadena)
+        recorrido, aceptada = self.afd.obtener_recorrido(
+            cadena
+        )
 
         if aceptada:
 
-            self.resultado_simulacion.config(
-                text="✓ CADENA ACEPTADA"
-            )
+            resultado = "✓ CADENA ACEPTADA"
 
         else:
 
-            self.resultado_simulacion.config(
-                text="✗ CADENA RECHAZADA"
-            )
+            resultado = "✗ CADENA RECHAZADA"
+
+        texto_recorrido = "\n".join(recorrido)
+
+        self.resultado_simulacion.config(
+            text=resultado
+        )
+
+        self.ventana_recorrido.delete(
+            "1.0",
+            tk.END
+        )
+
+        self.ventana_recorrido.insert(
+            tk.END,
+            texto_recorrido
+        )

@@ -60,3 +60,43 @@ class AFD:
             estado_actual = self.transiciones[(estado_actual, simbolo)]
 
         return estado_actual in self.estados_finales
+
+    def obtener_recorrido(self, cadena):
+
+        recorrido = []
+
+        estado_actual = self.estado_inicial
+
+        recorrido.append(
+            f"Estado inicial: {estado_actual}"
+        )
+
+        for simbolo in cadena:
+
+            if simbolo not in self.alfabeto:
+                return recorrido, False
+
+            if (estado_actual, simbolo) not in self.transiciones:
+                return recorrido, False
+
+            estado_siguiente = self.transiciones[
+                (estado_actual, simbolo)
+            ]
+
+            recorrido.append(
+                f"{estado_actual} --{simbolo}--> {estado_siguiente}"
+            )
+
+            estado_actual = estado_siguiente
+
+        aceptada = estado_actual in self.estados_finales
+
+        recorrido.append(
+            f"Estado final: {estado_actual}"
+        )
+
+        recorrido.append(
+            f"Resultado: {'ACEPTADA' if aceptada else 'RECHAZADA'}"
+        )
+
+        return recorrido, aceptada
