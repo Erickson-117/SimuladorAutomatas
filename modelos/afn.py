@@ -86,5 +86,71 @@ class AFN:
 
         return bool(
             estados_actuales & self.estados_finales
-        )    
+        )
+
+    def obtener_recorrido(self, cadena):
+
+        recorrido = []
+
+        estados_actuales = self.epsilon_cierre(
+            {self.estado_inicial}
+        )
+
+        recorrido.append(
+            f"Estado inicial: {estados_actuales}"
+        )
+
+        for simbolo in cadena:
+
+            if simbolo not in self.alfabeto:
+                recorrido.append(
+                    f"Símbolo inválido: {simbolo}"
+                )
+                return recorrido, False
+
+            nuevos_estados = set()
+
+            for estado in estados_actuales:
+
+                destinos = self.transiciones.get(
+                    (estado, simbolo),
+                    set()
+                )
+
+                nuevos_estados.update(destinos)
+
+            recorrido.append(
+                f"Leer símbolo: {simbolo}"
+            )
+
+            recorrido.append(
+                f"Estados después de leer {simbolo}: "
+                f"{nuevos_estados}"
+            )
+
+            estados_actuales = self.epsilon_cierre(
+                nuevos_estados
+            )
+
+            if estados_actuales != nuevos_estados:
+
+                recorrido.append(
+                    f"ε-cierre: {estados_actuales}"
+                )
+
+        aceptada = bool(
+            estados_actuales & self.estados_finales
+        )
+
+        recorrido.append(
+            f"Estados finales alcanzados: "
+            f"{estados_actuales}"
+        )
+
+        recorrido.append(
+            f"Resultado: "
+            f"{'ACEPTADA' if aceptada else 'RECHAZADA'}"
+        )
+
+        return recorrido, aceptada    
         

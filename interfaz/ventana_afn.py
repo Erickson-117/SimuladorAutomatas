@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from modelos.afn import AFN
+from interfaz.visualizador import Visualizador
 
 
 class VentanaAFN:
@@ -10,187 +11,595 @@ class VentanaAFN:
 
         self.ventana = tk.Toplevel(ventana_padre)
 
-        self.ventana.title("Crear AFN")
-        self.ventana.geometry("850x700")
-        self.ventana.minsize(750, 600)
+        self.ventana.title("Simulador de AFN")
+        self.ventana.geometry("1100x720")
+        self.ventana.minsize(950, 620)
 
         self.afn = None
 
+        self.configurar_estilos()
         self.crear_interfaz()
+
+    # ==========================================================
+    # ESTILOS
+    # ==========================================================
+
+    def configurar_estilos(self):
+
+        estilo = ttk.Style()
+
+        try:
+            estilo.theme_use("clam")
+        except tk.TclError:
+            pass
+
+        estilo.configure(
+            "Principal.TFrame",
+            background="#f4f6f8"
+        )
+
+        estilo.configure(
+            "Titulo.TLabel",
+            background="#f4f6f8",
+            foreground="#17202a",
+            font=("Segoe UI", 20, "bold")
+        )
+
+        estilo.configure(
+            "Subtitulo.TLabel",
+            background="#f4f6f8",
+            foreground="#68737d",
+            font=("Segoe UI", 10)
+        )
+
+        estilo.configure(
+            "Principal.TButton",
+            font=("Segoe UI", 10, "bold"),
+            padding=(18, 9)
+        )
+
+        estilo.configure(
+            "Secundario.TButton",
+            font=("Segoe UI", 10),
+            padding=(15, 9)
+        )
+
+    # ==========================================================
+    # INTERFAZ
+    # ==========================================================
 
     def crear_interfaz(self):
 
-        titulo = ttk.Label(
+        # Fondo principal
+        principal = ttk.Frame(
             self.ventana,
-            text="CREAR AUTÓMATA FINITO NO DETERMINISTA",
-            font=("Arial", 16, "bold")
+            style="Principal.TFrame",
+            padding=20
         )
 
-        titulo.pack(pady=20)
+        principal.pack(
+            fill="both",
+            expand=True
+        )
 
-        formulario = ttk.Frame(self.ventana)
-        formulario.pack(pady=10)
+        # ======================================================
+        # ENCABEZADO
+        # ======================================================
+
+        encabezado = ttk.Frame(
+            principal,
+            style="Principal.TFrame"
+        )
+
+        encabezado.pack(
+            fill="x",
+            pady=(0, 18)
+        )
+
+        ttk.Label(
+            encabezado,
+            text="Simulador de AFN",
+            style="Titulo.TLabel"
+        ).pack(
+            anchor="w"
+        )
+
+        ttk.Label(
+            encabezado,
+            text=(
+                "Autómata Finito No Determinista · "
+                "Configuración y simulación"
+            ),
+            style="Subtitulo.TLabel"
+        ).pack(
+            anchor="w",
+            pady=(3, 0)
+        )
+
+        # ======================================================
+        # DOS COLUMNAS
+        # ======================================================
+
+        columnas = ttk.Frame(
+            principal,
+            style="Principal.TFrame"
+        )
+
+        columnas.pack(
+            fill="both",
+            expand=True
+        )
+
+        columnas.columnconfigure(
+            0,
+            weight=1
+        )
+
+        columnas.columnconfigure(
+            1,
+            weight=1
+        )
+
+        columnas.rowconfigure(
+            0,
+            weight=1
+        )
+
+        # ======================================================
+        # COLUMNA IZQUIERDA
+        # ======================================================
+
+        izquierda = tk.Frame(
+            columnas,
+            bg="#ffffff",
+            highlightbackground="#dfe4e8",
+            highlightthickness=1
+        )
+
+        izquierda.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
+            padx=(0, 8)
+        )
+
+        # Título
+        tk.Label(
+            izquierda,
+            text="Configuración del AFN",
+            bg="#ffffff",
+            fg="#17202a",
+            font=("Segoe UI", 12, "bold")
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(18, 3)
+        )
+
+        tk.Label(
+            izquierda,
+            text="Define los elementos del autómata.",
+            bg="#ffffff",
+            fg="#7b8794",
+            font=("Segoe UI", 9)
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 15)
+        )
+
+        # ------------------------------------------------------
+        # FORMULARIO
+        # ------------------------------------------------------
+
+        formulario = tk.Frame(
+            izquierda,
+            bg="#ffffff"
+        )
+
+        formulario.pack(
+            fill="x",
+            padx=20
+        )
+
+        formulario.columnconfigure(
+            1,
+            weight=1
+        )
 
         # Estados
-        ttk.Label(
+        self.entrada_estados = self.crear_campo(
             formulario,
-            text="Estados:"
-        ).grid(row=0, column=0, padx=10, pady=8, sticky="e")
-
-        self.entrada_estados = ttk.Entry(
-            formulario,
-            width=45
-        )
-
-        self.entrada_estados.grid(
-            row=0,
-            column=1,
-            padx=10,
-            pady=8
+            0,
+            "Estados"
         )
 
         # Alfabeto
-        ttk.Label(
+        self.entrada_alfabeto = self.crear_campo(
             formulario,
-            text="Alfabeto:"
-        ).grid(row=1, column=0, padx=10, pady=8, sticky="e")
-
-        self.entrada_alfabeto = ttk.Entry(
-            formulario,
-            width=45
-        )
-
-        self.entrada_alfabeto.grid(
-            row=1,
-            column=1,
-            padx=10,
-            pady=8
+            1,
+            "Alfabeto"
         )
 
         # Estado inicial
-        ttk.Label(
+        self.entrada_inicial = self.crear_campo(
             formulario,
-            text="Estado inicial:"
-        ).grid(row=2, column=0, padx=10, pady=8, sticky="e")
-
-        self.entrada_inicial = ttk.Entry(
-            formulario,
-            width=45
-        )
-
-        self.entrada_inicial.grid(
-            row=2,
-            column=1,
-            padx=10,
-            pady=8
+            2,
+            "Estado inicial"
         )
 
         # Estados finales
-        ttk.Label(
+        self.entrada_finales = self.crear_campo(
             formulario,
-            text="Estados finales:"
-        ).grid(row=3, column=0, padx=10, pady=8, sticky="e")
-
-        self.entrada_finales = ttk.Entry(
-            formulario,
-            width=45
+            3,
+            "Estados finales"
         )
 
-        self.entrada_finales.grid(
-            row=3,
-            column=1,
-            padx=10,
-            pady=8
+        # ------------------------------------------------------
+        # TRANSICIONES
+        # ------------------------------------------------------
+
+        tk.Label(
+            izquierda,
+            text="Transiciones",
+            bg="#ffffff",
+            fg="#17202a",
+            font=("Segoe UI", 10, "bold")
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(18, 5)
         )
 
-        # Transiciones
-        ttk.Label(
-            formulario,
-            text="Transiciones:"
-        ).grid(row=4, column=0, padx=10, pady=8, sticky="ne")
+        tk.Label(
+            izquierda,
+            text=(
+                "Una transición por línea:\n"
+                "estado,símbolo,destino\n"
+                "Usa ε para una transición vacía."
+            ),
+            bg="#ffffff",
+            fg="#7b8794",
+            font=("Segoe UI", 8)
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 7)
+        )
 
         self.entrada_transiciones = tk.Text(
-            formulario,
-            width=45,
-            height=8
-        )
-
-        self.entrada_transiciones.grid(
-            row=4,
-            column=1,
+            izquierda,
+            height=7,
+            font=("Consolas", 10),
+            bg="#f8f9fa",
+            fg="#17202a",
+            insertbackground="#17202a",
+            relief="flat",
+            borderwidth=0,
+            highlightbackground="#dfe4e8",
+            highlightthickness=1,
             padx=10,
             pady=8
         )
 
-        ayuda = ttk.Label(
-            formulario,
-            text="Formato: estado,símbolo,destino\n"
-                 "Ejemplo: q0,0,q1\n"
-                 "Para épsilon use: ε"
+        self.entrada_transiciones.pack(
+            fill="x",
+            padx=20
         )
 
-        ayuda.grid(
-            row=5,
-            column=1,
-            sticky="w",
-            padx=10
+        tk.Label(
+            izquierda,
+            text="Ejemplo: q0,ε,q1    q1,0,q2    q1,0,q3",
+            bg="#ffffff",
+            fg="#7b8794",
+            font=("Consolas", 8)
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(5, 10)
         )
 
-        # Botón crear
-        boton_crear = ttk.Button(
-            formulario,
+        # ======================================================
+        # BOTONES
+        # ======================================================
+
+        botones = tk.Frame(
+            izquierda,
+            bg="#ffffff"
+        )
+
+        botones.pack(
+            fill="x",
+            padx=20,
+            pady=(5, 18)
+        )
+
+        self.boton_crear = ttk.Button(
+            botones,
             text="Crear AFN",
+            style="Principal.TButton",
             command=self.crear_afn
         )
 
-        boton_crear.grid(
-            row=6,
-            column=0,
-            columnspan=2,
-            pady=20
+        self.boton_crear.pack(
+            side="left",
+            padx=(0, 8)
         )
 
-        # Resultado de creación
-        self.resultado = ttk.Label(
-            self.ventana,
-            text=""
+        self.boton_visualizar = ttk.Button(
+            botones,
+            text="Visualizar AFN",
+            style="Secundario.TButton",
+            command=self.visualizar,
+            state="disabled"
         )
 
-        self.resultado.pack(pady=5)
-
-        ttk.Separator(
-            self.ventana,
-            orient="horizontal"
-        ).pack(fill="x", padx=30, pady=15)
-
-        # Simulación
-        ttk.Label(
-            self.ventana,
-            text="SIMULAR CADENA",
-            font=("Arial", 13, "bold")
-        ).pack(pady=5)
-
-        self.entrada_cadena = ttk.Entry(
-            self.ventana,
-            width=40
+        self.boton_visualizar.pack(
+            side="left"
         )
 
-        self.entrada_cadena.pack(pady=5)
+        self.resultado = tk.Label(
+            botones,
+            text="",
+            bg="#ffffff",
+            fg="#218c74",
+            font=("Segoe UI", 9, "bold")
+        )
 
-        boton_simular = ttk.Button(
-            self.ventana,
-            text="Simular",
+        self.resultado.pack(
+            side="left",
+            padx=12
+        )
+
+        # ======================================================
+        # COLUMNA DERECHA
+        # ======================================================
+
+        derecha = tk.Frame(
+            columnas,
+            bg="#ffffff",
+            highlightbackground="#dfe4e8",
+            highlightthickness=1
+        )
+
+        derecha.grid(
+            row=0,
+            column=1,
+            sticky="nsew",
+            padx=(8, 0)
+        )
+
+        # ------------------------------------------------------
+        # TÍTULO
+        # ------------------------------------------------------
+
+        tk.Label(
+            derecha,
+            text="Probar cadena",
+            bg="#ffffff",
+            fg="#17202a",
+            font=("Segoe UI", 12, "bold")
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(18, 3)
+        )
+
+        tk.Label(
+            derecha,
+            text=(
+                "Introduce una cadena para comprobar "
+                "si el AFN la acepta."
+            ),
+            bg="#ffffff",
+            fg="#7b8794",
+            font=("Segoe UI", 9)
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 15)
+        )
+
+        # ------------------------------------------------------
+        # CADENA
+        # ------------------------------------------------------
+
+        fila_cadena = tk.Frame(
+            derecha,
+            bg="#ffffff"
+        )
+
+        fila_cadena.pack(
+            fill="x",
+            padx=20
+        )
+
+        self.entrada_cadena = tk.Entry(
+            fila_cadena,
+            font=("Segoe UI", 11),
+            bg="#f8f9fa",
+            fg="#17202a",
+            insertbackground="#17202a",
+            relief="flat",
+            highlightbackground="#dfe4e8",
+            highlightthickness=1
+        )
+
+        self.entrada_cadena.pack(
+            side="left",
+            fill="x",
+            expand=True,
+            ipady=7
+        )
+
+        self.boton_simular = ttk.Button(
+            fila_cadena,
+            text="Probar cadena",
+            style="Principal.TButton",
             command=self.simular
         )
 
-        boton_simular.pack(pady=5)
-
-        self.resultado_simulacion = ttk.Label(
-            self.ventana,
-            text=""
+        self.boton_simular.pack(
+            side="left",
+            padx=(10, 0)
         )
 
-        self.resultado_simulacion.pack(pady=10)
+        # ------------------------------------------------------
+        # RESULTADO
+        # ------------------------------------------------------
+
+        resultado_frame = tk.Frame(
+            derecha,
+            bg="#f8f9fa"
+        )
+
+        resultado_frame.pack(
+            fill="x",
+            padx=20,
+            pady=18
+        )
+
+        tk.Label(
+            resultado_frame,
+            text="Resultado",
+            bg="#f8f9fa",
+            fg="#7b8794",
+            font=("Segoe UI", 8)
+        ).pack(
+            anchor="w",
+            padx=12,
+            pady=(9, 2)
+        )
+
+        self.resultado_simulacion = tk.Label(
+            resultado_frame,
+            text="Aún no se ha probado ninguna cadena.",
+            bg="#f8f9fa",
+            fg="#34495e",
+            font=("Segoe UI", 10, "bold")
+        )
+
+        self.resultado_simulacion.pack(
+            anchor="w",
+            padx=12,
+            pady=(0, 9)
+        )
+
+        # ------------------------------------------------------
+        # RECORRIDO
+        # ------------------------------------------------------
+
+        tk.Label(
+            derecha,
+            text="Recorrido de la simulación",
+            bg="#ffffff",
+            fg="#17202a",
+            font=("Segoe UI", 10, "bold")
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(5, 7)
+        )
+
+        recorrido_frame = tk.Frame(
+            derecha,
+            bg="#ffffff"
+        )
+
+        recorrido_frame.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=(0, 20)
+        )
+
+        self.ventana_recorrido = tk.Text(
+            recorrido_frame,
+            font=("Consolas", 9),
+            bg="#f8f9fa",
+            fg="#34495e",
+            relief="flat",
+            borderwidth=0,
+            highlightbackground="#dfe4e8",
+            highlightthickness=1,
+            wrap="word",
+            padx=10,
+            pady=10,
+            state="disabled"
+        )
+
+        self.ventana_recorrido.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        scrollbar = ttk.Scrollbar(
+            recorrido_frame,
+            orient="vertical",
+            command=self.ventana_recorrido.yview
+        )
+
+        scrollbar.pack(
+            side="right",
+            fill="y"
+        )
+
+        self.ventana_recorrido.configure(
+            yscrollcommand=scrollbar.set
+        )
+
+    # ==========================================================
+    # CREAR CAMPO
+    # ==========================================================
+
+    def crear_campo(
+        self,
+        contenedor,
+        fila,
+        texto
+    ):
+
+        etiqueta = tk.Label(
+            contenedor,
+            text=texto,
+            bg="#ffffff",
+            fg="#34495e",
+            font=("Segoe UI", 9)
+        )
+
+        etiqueta.grid(
+            row=fila,
+            column=0,
+            sticky="w",
+            padx=(0, 12),
+            pady=5
+        )
+
+        entrada = tk.Entry(
+            contenedor,
+            font=("Segoe UI", 9),
+            bg="#f8f9fa",
+            fg="#17202a",
+            insertbackground="#17202a",
+            relief="flat",
+            highlightbackground="#dfe4e8",
+            highlightthickness=1
+        )
+
+        entrada.grid(
+            row=fila,
+            column=1,
+            sticky="ew",
+            pady=5,
+            ipady=6
+        )
+
+        return entrada
+
+    # ==========================================================
+    # CREAR AFN
+    # ==========================================================
 
     def crear_afn(self):
 
@@ -208,7 +617,11 @@ class VentanaAFN:
                 if simbolo.strip()
             }
 
-            estado_inicial = self.entrada_inicial.get().strip()
+            estado_inicial = (
+                self.entrada_inicial
+                .get()
+                .strip()
+            )
 
             estados_finales = {
                 estado.strip()
@@ -216,10 +629,11 @@ class VentanaAFN:
                 if estado.strip()
             }
 
-            texto_transiciones = self.entrada_transiciones.get(
-                "1.0",
-                tk.END
-            ).strip()
+            texto_transiciones = (
+                self.entrada_transiciones
+                .get("1.0", tk.END)
+                .strip()
+            )
 
             transiciones = {}
 
@@ -227,25 +641,39 @@ class VentanaAFN:
 
                 for linea in texto_transiciones.splitlines():
 
+                    linea = linea.strip()
+
+                    if not linea:
+                        continue
+
                     partes = [
                         parte.strip()
                         for parte in linea.split(",")
                     ]
 
                     if len(partes) != 3:
+
                         raise ValueError(
-                            f"Transición inválida: {linea}\n"
-                            "Use el formato estado,símbolo,destino."
+                            f"Transición inválida:\n\n"
+                            f"{linea}\n\n"
+                            "Use el formato:\n"
+                            "estado,símbolo,destino"
                         )
 
                     origen, simbolo, destino = partes
 
-                    clave = (origen, simbolo)
+                    clave = (
+                        origen,
+                        simbolo
+                    )
 
                     if clave not in transiciones:
+
                         transiciones[clave] = set()
 
-                    transiciones[clave].add(destino)
+                    transiciones[clave].add(
+                        destino
+                    )
 
             self.afn = AFN(
                 estados,
@@ -256,43 +684,143 @@ class VentanaAFN:
             )
 
             self.resultado.config(
-                text="✓ AFN creado correctamente."
+                text="✓ AFN creado correctamente.",
+                fg="#218c74"
+            )
+
+            self.boton_visualizar.config(
+                state="normal"
             )
 
             self.resultado_simulacion.config(
-                text=""
+                text="Aún no se ha probado ninguna cadena.",
+                fg="#34495e"
             )
+
+            self.limpiar_recorrido()
 
         except ValueError as error:
 
             self.afn = None
 
+            self.boton_visualizar.config(
+                state="disabled"
+            )
+
+            self.resultado.config(
+                text="✗ Error al crear el AFN.",
+                fg="#c0392b"
+            )
+
             messagebox.showerror(
-                "Error",
+                "Error al crear AFN",
                 str(error)
             )
+
+    # ==========================================================
+    # SIMULAR
+    # ==========================================================
 
     def simular(self):
 
         if self.afn is None:
+
             messagebox.showwarning(
                 "Advertencia",
                 "Primero debe crear el AFN."
             )
+
             return
 
         cadena = self.entrada_cadena.get()
 
-        aceptada = self.afn.simular(cadena)
+        recorrido, aceptada = (
+            self.afn.obtener_recorrido(cadena)
+        )
 
         if aceptada:
 
             self.resultado_simulacion.config(
-                text="✓ CADENA ACEPTADA"
+                text="✓ CADENA ACEPTADA",
+                fg="#218c74"
             )
 
         else:
 
             self.resultado_simulacion.config(
-                text="✗ CADENA RECHAZADA"
+                text="✗ CADENA RECHAZADA",
+                fg="#c0392b"
             )
+
+        self.mostrar_recorrido(
+            recorrido
+        )
+
+    # ==========================================================
+    # VISUALIZAR AFN
+    # ==========================================================
+
+    def visualizar(self):
+
+        if self.afn is None:
+
+            messagebox.showwarning(
+                "Advertencia",
+                "Primero debe crear el AFN."
+            )
+
+            return
+
+        visualizador = Visualizador(
+            self.ventana
+        )
+
+        visualizador.dibujar_automata(
+            estados=self.afn.estados,
+            transiciones=self.afn.transiciones,
+            estado_inicial=self.afn.estado_inicial,
+            estados_finales=self.afn.estados_finales
+        )
+
+    # ==========================================================
+    # MOSTRAR RECORRIDO
+    # ==========================================================
+
+    def mostrar_recorrido(self, recorrido):
+
+        self.ventana_recorrido.config(
+            state="normal"
+        )
+
+        self.ventana_recorrido.delete(
+            "1.0",
+            tk.END
+        )
+
+        self.ventana_recorrido.insert(
+            tk.END,
+            "\n".join(recorrido)
+        )
+
+        self.ventana_recorrido.config(
+            state="disabled"
+        )
+
+    # ==========================================================
+    # LIMPIAR RECORRIDO
+    # ==========================================================
+
+    def limpiar_recorrido(self):
+
+        self.ventana_recorrido.config(
+            state="normal"
+        )
+
+        self.ventana_recorrido.delete(
+            "1.0",
+            tk.END
+        )
+
+        self.ventana_recorrido.config(
+            state="disabled"
+        )
