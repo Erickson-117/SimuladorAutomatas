@@ -31,6 +31,14 @@ class AFD:
                     f"El estado destino '{destino}' no existe."
                 )
 
+        for estado in estados:
+            for simbolo in alfabeto:
+                if (estado, simbolo) not in transiciones:
+                    raise ValueError(
+                        f"Falta la transición para "
+                        f"({estado}, {simbolo})."
+                    )           
+
         self.estados = estados
         self.alfabeto = alfabeto
         self.estado_inicial = estado_inicial
