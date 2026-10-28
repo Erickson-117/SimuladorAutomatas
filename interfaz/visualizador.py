@@ -4,12 +4,15 @@ import math
 
 class Visualizador:
 
-    def __init__(self, ventana_padre):
-        self.ventana = tk.Toplevel(ventana_padre)
-        self.ventana.title("Visualización del Autómata")
-        self.ventana.geometry("1100x750")
-        self.ventana.minsize(800, 600)
-        self.ventana.configure(bg="#f4f6f8")
+    def __init__(self, ventana_padre, contenedor=None):
+        self.ventana = ventana_padre
+        self.contenedor_externo = contenedor is not None
+        if contenedor is None:
+            self.ventana = tk.Toplevel(ventana_padre)
+            self.ventana.title("Visualización del Autómata")
+            self.ventana.geometry("1100x750")
+            self.ventana.minsize(800, 600)
+            self.ventana.configure(bg="#f4f6f8")
 
         # Colores
         self.color_fondo = "#f4f6f8"
@@ -22,53 +25,27 @@ class Visualizador:
         self.color_texto = "#1f2937"
         self.color_etiqueta = "#2563eb"
 
-        # -----------------------------
-        # ENCABEZADO
-        # -----------------------------
-
-        encabezado = tk.Frame(
-            self.ventana,
-            bg=self.color_fondo
-        )
-        encabezado.pack(
-            fill="x",
-            padx=25,
-            pady=(20, 10)
-        )
-
-        tk.Label(
-            encabezado,
-            text="Visualización del Autómata",
-            font=("Segoe UI", 18, "bold"),
-            bg=self.color_fondo,
-            fg=self.color_texto
-        ).pack()
-
-        tk.Label(
-            encabezado,
-            text="Representación gráfica de estados y transiciones",
-            font=("Segoe UI", 10),
-            bg=self.color_fondo,
-            fg="#6b7280"
-        ).pack(pady=(3, 0))
-
-        # -----------------------------
-        # CONTENEDOR DEL CANVAS
-        # -----------------------------
-
-        contenedor = tk.Frame(
-            self.ventana,
-            bg=self.color_canvas,
-            highlightbackground="#d1d5db",
-            highlightthickness=1
-        )
-
-        contenedor.pack(
-            fill="both",
-            expand=True,
-            padx=25,
-            pady=(5, 25)
-        )
+        if contenedor is None:
+            # Encabezado y marco propios cuando se usa ventana independiente.
+            encabezado = tk.Frame(self.ventana, bg=self.color_fondo)
+            encabezado.pack(fill="x", padx=25, pady=(20, 10))
+            tk.Label(
+                encabezado, text="Visualización del Autómata",
+                font=("Segoe UI", 18, "bold"), bg=self.color_fondo,
+                fg=self.color_texto
+            ).pack()
+            tk.Label(
+                encabezado,
+                text="Representación gráfica de estados y transiciones",
+                font=("Segoe UI", 10), bg=self.color_fondo, fg="#6b7280"
+            ).pack(pady=(3, 0))
+            contenedor = tk.Frame(
+                self.ventana, bg=self.color_canvas,
+                highlightbackground="#d1d5db", highlightthickness=1
+            )
+            contenedor.pack(fill="both", expand=True, padx=25, pady=(5, 25))
+        else:
+            contenedor.configure(bg=self.color_canvas)
 
         self.canvas = tk.Canvas(
             contenedor,
@@ -83,19 +60,19 @@ class Visualizador:
             pady=10
         )
 
-    # ==================================================
     # DIBUJAR AUTOMATA
-    # ==================================================
 
     def dibujar_automata(
         self,
         estados,
         transiciones,
         estado_inicial,
-        estados_finales
+        estados_finales,
+        estados_activos=None
     ):
 
         self.canvas.delete("all")
+        estados_activos = set(estados_activos or [])
 
         estados = sorted(estados)
         estados_finales = set(estados_finales)
@@ -108,11 +85,11 @@ class Visualizador:
 
         # Si Tkinter todavía no ha calculado el tamaño,
         # utilizamos dimensiones aproximadas.
-        if ancho < 400:
-            ancho = 1000
+        if ancho < 100:
+            ancho = 600
 
-        if alto < 300:
-            alto = 600
+        if alto < 80:
+            alto = 260
 
         posiciones = self.calcular_posiciones(
             estados,
@@ -135,7 +112,8 @@ class Visualizador:
         self.dibujar_estados(
             posiciones,
             estado_inicial,
-            estados_finales
+            estados_finales,
+            estados_activos
         )
 
         # Finalmente el indicador inicial
@@ -144,9 +122,7 @@ class Visualizador:
             estado_inicial
         )
 
-    # ==================================================
     # CALCULAR POSICIONES
-    # ==================================================
 
     def calcular_posiciones(
         self,
@@ -194,15 +170,12 @@ class Visualizador:
         # amplio para que los bucles y etiquetas
         # no queden pegados al borde.
 
-        radio_x = min(
-            350,
-            ancho / 2 - 170
-        )
-
-        radio_y = min(
-            210,
-            alto / 2 - 150
-        )
+        if self.contenedor_externo:
+            radio_x = max(45, min(180, ancho / 2 - 45))
+            radio_y = max(35, min(85, alto / 2 - 35))
+        else:
+            radio_x = min(350, ancho / 2 - 170)
+            radio_y = min(210, alto / 2 - 150)
 
         for indice, estado in enumerate(estados):
 
@@ -221,9 +194,7 @@ class Visualizador:
 
         return posiciones
 
-    # ==================================================
     # AGRUPAR TRANSICIONES
-    # ==================================================
 
     def agrupar_transiciones(
         self,
@@ -267,9 +238,7 @@ class Visualizador:
 
         return grupos
 
-    # ==================================================
     # DIBUJAR TRANSICIONES
-    # ==================================================
 
     def dibujar_transiciones(
         self,
@@ -293,9 +262,7 @@ class Visualizador:
                 sorted(simbolos)
             )
 
-            # --------------------------
             # BUCLE
-            # --------------------------
 
             if origen == destino:
 
@@ -304,9 +271,7 @@ class Visualizador:
                     etiqueta
                 )
 
-            # --------------------------
             # DOS DIRECCIONES
-            # --------------------------
 
             elif (
                 destino,
@@ -333,9 +298,7 @@ class Visualizador:
                     desplazamiento
                 )
 
-            # --------------------------
             # UNA DIRECCIÓN
-            # --------------------------
 
             else:
 
@@ -345,9 +308,7 @@ class Visualizador:
                     etiqueta
                 )
 
-    # ==================================================
     # TRANSICIÓN RECTA
-    # ==================================================
 
     def dibujar_recta(
         self,
@@ -370,7 +331,7 @@ class Visualizador:
         if distancia == 0:
             return
 
-        radio = 40
+        radio = 24 if self.contenedor_externo else 40
 
         ux = dx / distancia
         uy = dy / distancia
@@ -414,9 +375,7 @@ class Visualizador:
             etiqueta
         )
 
-    # ==================================================
     # TRANSICIÓN CURVA
-    # ==================================================
 
     def dibujar_curva(
         self,
@@ -446,7 +405,7 @@ class Visualizador:
         px = -uy
         py = ux
 
-        radio = 40
+        radio = 24 if self.contenedor_externo else 40
 
         inicio_x = x1 + ux * radio
         inicio_y = y1 + uy * radio
@@ -485,9 +444,7 @@ class Visualizador:
             etiqueta
         )
 
-    # ==================================================
     # BUCLE
-    # ==================================================
 
     def dibujar_bucle(
         self,
@@ -530,9 +487,7 @@ class Visualizador:
             etiqueta
         )
 
-    # ==================================================
     # ETIQUETA DE TRANSICIÓN
-    # ==================================================
 
     def dibujar_etiqueta(
         self,
@@ -574,26 +529,30 @@ class Visualizador:
             fill=self.color_etiqueta
         )
 
-    # ==================================================
     # DIBUJAR ESTADOS
-    # ==================================================
 
     def dibujar_estados(
         self,
         posiciones,
         estado_inicial,
-        estados_finales
+        estados_finales,
+        estados_activos=None
     ):
 
-        radio = 40
+        estados_activos = set(estados_activos or [])
+        # Nodos más pequeños para que las etiquetas y transiciones respiren
+        # dentro del panel integrado de la interfaz.
+        radio = 24 if self.contenedor_externo else 40
 
         for estado, (
             x,
             y
         ) in posiciones.items():
 
-            # Color del estado
-            if estado in estados_finales:
+            # El estado activo se resalta durante la animación.
+            if estado in estados_activos:
+                relleno = "#ffd166"
+            elif estado in estados_finales:
 
                 relleno = self.color_estado_final
 
@@ -634,13 +593,11 @@ class Visualizador:
                 x,
                 y,
                 text=estado,
-                font=("Segoe UI", 11, "bold"),
+                font=("Segoe UI", 9 if self.contenedor_externo else 11, "bold"),
                 fill=self.color_texto
             )
 
-    # ==================================================
     # INDICADOR DE ESTADO INICIAL
-    # ==================================================
 
     def dibujar_estado_inicial(
         self,
@@ -655,9 +612,9 @@ class Visualizador:
             estado_inicial
         ]
 
-        radio = 40
+        radio = 30 if self.contenedor_externo else 40
 
-        inicio_x = x - 105
+        inicio_x = x - (85 if self.contenedor_externo else 105)
         final_x = x - radio - 5
 
         self.canvas.create_line(

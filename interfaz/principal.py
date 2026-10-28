@@ -11,8 +11,8 @@ class Aplicacion:
         self.ventana = ventana
 
         self.ventana.title("Simulador de Autómatas")
-        self.ventana.geometry("900x600")
-        self.ventana.minsize(800, 550)
+        # La aplicación se ejecuta a pantalla completa para aprovechar el espacio.
+        self.ventana.attributes("-fullscreen", True)
         self.ventana.configure(bg="#f4f6f8")
 
         self.configurar_estilos()
@@ -89,9 +89,7 @@ class Aplicacion:
             expand=True
         )
 
-        # -------------------------
         # ENCABEZADO
-        # -------------------------
 
         encabezado = ttk.Frame(
             panel,
@@ -117,9 +115,7 @@ class Aplicacion:
         )
         subtitulo.pack(pady=(8, 0))
 
-        # -------------------------
         # SECCIÓN DE SELECCIÓN
-        # -------------------------
 
         contenido = ttk.Frame(
             panel,
@@ -139,9 +135,7 @@ class Aplicacion:
         )
         texto.pack(pady=(10, 25))
 
-        # -------------------------
         # BOTONES
-        # -------------------------
 
         botones = ttk.Frame(
             contenido,
@@ -153,7 +147,7 @@ class Aplicacion:
             botones,
             text="Crear AFD",
             style="Principal.TButton",
-            command=lambda: VentanaAFD(self.ventana)
+            command=self.abrir_afd
         )
         boton_afd.grid(
             row=0,
@@ -166,7 +160,7 @@ class Aplicacion:
             botones,
             text="Crear AFN",
             style="Principal.TButton",
-            command=lambda: VentanaAFN(self.ventana)
+            command=self.abrir_afn
         )
         boton_afn.grid(
             row=0,
@@ -175,9 +169,8 @@ class Aplicacion:
             pady=10
         )
 
-        # -------------------------
         # INFORMACIÓN
-        # -------------------------
+     
 
         informacion = ttk.Frame(
             contenido,
@@ -229,9 +222,9 @@ class Aplicacion:
             pady=(5, 0)
         )
 
-        # -------------------------
+       
         # PIE DE VENTANA
-        # -------------------------
+     
 
         pie = ttk.Frame(
             panel,
@@ -247,4 +240,20 @@ class Aplicacion:
             pie,
             text="Proyecto - Autómatas y Lenguajes Formales",
             style="Subtitulo.TLabel"
-        ).pack()
+        ).pack(side="left")
+
+        ttk.Button(
+            pie,
+            text="Salir del programa",
+            style="Secundario.TButton",
+            command=self.ventana.destroy
+        ).pack(side="right")
+    def abrir_afd(self):
+        """Oculta la pantalla principal y abre una única ventana de trabajo."""
+        self.ventana.withdraw()
+        VentanaAFD(self.ventana)
+
+    def abrir_afn(self):
+        """Oculta la pantalla principal y abre una única ventana de trabajo."""
+        self.ventana.withdraw()
+        VentanaAFN(self.ventana)

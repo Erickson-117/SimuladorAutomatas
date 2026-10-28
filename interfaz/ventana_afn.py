@@ -14,17 +14,19 @@ class VentanaAFN:
         self.ventana = tk.Toplevel(ventana_padre)
 
         self.ventana.title("Simulador de AFN")
-        self.ventana.geometry("1100x720")
-        self.ventana.minsize(950, 620)
+        # Mantener las ventanas de trabajo a pantalla completa.
+        self.ventana.attributes("-fullscreen", True)
+        self.ventana.protocol("WM_DELETE_WINDOW", self.regresar_a_principal)
+        self.ventana.bind("<Escape>", lambda _evento: self.regresar_a_principal())
 
         self.afn = None
+        self.visualizador = None
+        self._after_animacion = None
 
         self.configurar_estilos()
         self.crear_interfaz()
 
-    # ==========================================================
     # ESTILOS
-    # ==========================================================
 
     def configurar_estilos(self):
 
@@ -66,9 +68,7 @@ class VentanaAFN:
             padding=(15, 9)
         )
 
-    # ==========================================================
     # INTERFAZ
-    # ==========================================================
 
     def crear_interfaz(self):
 
@@ -84,9 +84,23 @@ class VentanaAFN:
             expand=True
         )
 
-        # ======================================================
+        # NAVEGACIÓN
+        barra_navegacion = ttk.Frame(principal, style="Principal.TFrame")
+        barra_navegacion.pack(fill="x", pady=(0, 8))
+        ttk.Button(
+            barra_navegacion,
+            text="← Pantalla principal",
+            style="Secundario.TButton",
+            command=self.regresar_a_principal
+        ).pack(side="left")
+        ttk.Button(
+            barra_navegacion,
+            text="Salir del programa",
+            style="Secundario.TButton",
+            command=self.salir_del_programa
+        ).pack(side="right")
+
         # ENCABEZADO
-        # ======================================================
 
         encabezado = ttk.Frame(
             principal,
@@ -118,9 +132,7 @@ class VentanaAFN:
             pady=(3, 0)
         )
 
-        # ======================================================
         # DOS COLUMNAS
-        # ======================================================
 
         columnas = ttk.Frame(
             principal,
@@ -132,24 +144,16 @@ class VentanaAFN:
             expand=True
         )
 
-        columnas.columnconfigure(
-            0,
-            weight=1
-        )
-
-        columnas.columnconfigure(
-            1,
-            weight=1
-        )
+        # Dar más espacio a la columna derecha, donde está el visualizador.
+        columnas.columnconfigure(0, weight=5, uniform="columnas")
+        columnas.columnconfigure(1, weight=6, uniform="columnas")
 
         columnas.rowconfigure(
             0,
             weight=1
         )
 
-        # ======================================================
         # COLUMNA IZQUIERDA
-        # ======================================================
 
         izquierda = tk.Frame(
             columnas,
@@ -190,9 +194,7 @@ class VentanaAFN:
             pady=(0, 15)
         )
 
-        # ------------------------------------------------------
         # FORMULARIO
-        # ------------------------------------------------------
 
         formulario = tk.Frame(
             izquierda,
@@ -237,9 +239,7 @@ class VentanaAFN:
             "Estados finales"
         )
 
-        # ------------------------------------------------------
         # TRANSICIONES
-        # ------------------------------------------------------
 
         tk.Label(
             izquierda,
@@ -301,9 +301,7 @@ class VentanaAFN:
             pady=(5, 10)
         )
 
-        # ======================================================
         # BOTONES
-        # ======================================================
 
         botones = tk.Frame(
             izquierda,
@@ -366,9 +364,7 @@ class VentanaAFN:
             padx=12
         )
 
-        # ======================================================
         # COLUMNA DERECHA
-        # ======================================================
 
         derecha = tk.Frame(
             columnas,
@@ -384,9 +380,7 @@ class VentanaAFN:
             padx=(8, 0)
         )
 
-        # ------------------------------------------------------
         # TÍTULO
-        # ------------------------------------------------------
 
         tk.Label(
             derecha,
@@ -415,9 +409,7 @@ class VentanaAFN:
             pady=(0, 15)
         )
 
-        # ------------------------------------------------------
         # CADENA
-        # ------------------------------------------------------
 
         fila_cadena = tk.Frame(
             derecha,
@@ -459,9 +451,7 @@ class VentanaAFN:
             padx=(10, 0)
         )
 
-        # ------------------------------------------------------
         # RESULTADO
-        # ------------------------------------------------------
 
         resultado_frame = tk.Frame(
             derecha,
@@ -500,9 +490,7 @@ class VentanaAFN:
             pady=(0, 9)
         )
 
-        # ------------------------------------------------------
         # RECORRIDO
-        # ------------------------------------------------------
 
         tk.Label(
             derecha,
@@ -516,57 +504,35 @@ class VentanaAFN:
             pady=(5, 7)
         )
 
-        recorrido_frame = tk.Frame(
-            derecha,
-            bg="#ffffff"
-        )
+        recorrido_frame = tk.Frame(derecha, bg="#ffffff")
+        recorrido_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
 
-        recorrido_frame.pack(
-            fill="both",
-            expand=True,
-            padx=20,
-            pady=(0, 20)
-        )
+        texto_frame = tk.Frame(recorrido_frame, bg="#ffffff", height=125)
+        texto_frame.pack(fill="x", expand=False)
+        texto_frame.pack_propagate(False)
 
         self.ventana_recorrido = tk.Text(
-            recorrido_frame,
-            font=("Consolas", 9),
-            bg="#f8f9fa",
-            fg="#34495e",
-            relief="flat",
-            borderwidth=0,
-            highlightbackground="#dfe4e8",
-            highlightthickness=1,
-            wrap="word",
-            padx=10,
-            pady=10,
-            state="disabled"
+            texto_frame, font=("Consolas", 9), bg="#f8f9fa", fg="#34495e",
+            relief="flat", borderwidth=0, highlightbackground="#dfe4e8",
+            highlightthickness=1, wrap="word", padx=10, pady=10, state="disabled"
         )
+        self.ventana_recorrido.pack(side="left", fill="both", expand=True)
+        scrollbar = ttk.Scrollbar(texto_frame, orient="vertical", command=self.ventana_recorrido.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.ventana_recorrido.configure(yscrollcommand=scrollbar.set)
 
-        self.ventana_recorrido.pack(
-            side="left",
-            fill="both",
-            expand=True
+        tk.Label(
+            recorrido_frame, text="Diagrama del autómata · estado activo en amarillo",
+            bg="#ffffff", fg="#68737d", font=("Segoe UI", 8)
+        ).pack(anchor="w", pady=(8, 3))
+        self.contenedor_grafico = tk.Frame(
+            recorrido_frame, bg="#ffffff", height=235,
+            highlightbackground="#dfe4e8", highlightthickness=1
         )
+        self.contenedor_grafico.pack(fill="both", expand=True)
+        self.contenedor_grafico.pack_propagate(False)
 
-        scrollbar = ttk.Scrollbar(
-            recorrido_frame,
-            orient="vertical",
-            command=self.ventana_recorrido.yview
-        )
-
-        scrollbar.pack(
-            side="right",
-            fill="y"
-        )
-
-        self.ventana_recorrido.configure(
-            yscrollcommand=scrollbar.set
-        )
-
-    # ==========================================================
     # CREAR CAMPO
-    # ==========================================================
 
     def crear_campo(
         self,
@@ -612,17 +578,13 @@ class VentanaAFN:
 
         return entrada
 
-    # ==========================================================
     # CREAR AFN
-    # ==========================================================
 
     def crear_afn(self):
 
         try:
 
-            # ==========================================
             # ESTADOS
-            # ==========================================
 
             texto_estados = (
                 self.entrada_estados
@@ -646,9 +608,7 @@ class VentanaAFN:
                     "Debe ingresar al menos un estado válido."
                 )
 
-            # ==========================================
             # ALFABETO
-            # ==========================================
 
             texto_alfabeto = (
                 self.entrada_alfabeto
@@ -672,9 +632,7 @@ class VentanaAFN:
                     "Debe ingresar al menos un símbolo válido."
                 )
 
-            # ==========================================
             # ESTADO INICIAL
-            # ==========================================
 
             estado_inicial = (
                 self.entrada_inicial
@@ -693,9 +651,7 @@ class VentanaAFN:
                     "no pertenece al conjunto de estados."
                 )
 
-            # ==========================================
             # ESTADOS FINALES
-            # ==========================================
 
             texto_finales = (
                 self.entrada_finales
@@ -728,9 +684,7 @@ class VentanaAFN:
                     )
                 )
 
-            # ==========================================
             # TRANSICIONES
-            # ==========================================
 
             texto_transiciones = (
                 self.entrada_transiciones
@@ -763,9 +717,7 @@ class VentanaAFN:
                     for parte in linea.split(",")
                 ]
 
-                # --------------------------------------
                 # FORMATO
-                # --------------------------------------
 
                 if len(partes) != 3:
 
@@ -778,9 +730,7 @@ class VentanaAFN:
 
                 origen, simbolo, destino = partes
 
-                # --------------------------------------
                 # CAMPOS VACÍOS
-                # --------------------------------------
 
                 if not origen:
 
@@ -803,9 +753,7 @@ class VentanaAFN:
                         "El estado destino está vacío."
                     )
 
-                # --------------------------------------
                 # ESTADO DE ORIGEN
-                # --------------------------------------
 
                 if origen not in estados:
 
@@ -815,9 +763,7 @@ class VentanaAFN:
                         "no existe."
                     )
 
-                # --------------------------------------
                 # SÍMBOLO
-                # --------------------------------------
                 #
                 # En un AFN se permite ε como transición
                 # aunque no forme parte del alfabeto.
@@ -831,9 +777,7 @@ class VentanaAFN:
                         "Para una transición epsilon use: ε"
                     )
 
-                # --------------------------------------
                 # ESTADO DESTINO
-                # --------------------------------------
 
                 if destino not in estados:
 
@@ -843,9 +787,7 @@ class VentanaAFN:
                         "no existe."
                     )
 
-                # --------------------------------------
                 # AGREGAR TRANSICIÓN
-                # --------------------------------------
 
                 clave = (
                     origen,
@@ -860,9 +802,7 @@ class VentanaAFN:
                     destino
                 )
 
-            # ==========================================
             # CREAR AFN
-            # ==========================================
 
             self.afn = AFN(
                 estados,
@@ -872,9 +812,7 @@ class VentanaAFN:
                 transiciones
             )
 
-            # ==========================================
             # ÉXITO
-            # ==========================================
 
             self.resultado.config(
                 text="✓ AFN creado correctamente.",
@@ -896,9 +834,7 @@ class VentanaAFN:
 
             self.limpiar_recorrido()
 
-        # ==============================================
         # ERROR
-        # ==============================================
 
         except ValueError as error:
 
@@ -922,9 +858,7 @@ class VentanaAFN:
                 str(error)
             )
 
-    # ==========================================================
     # CONVERTIR AFN A AFD
-    # ==========================================================
 
     def convertir_a_afd(self):
 
@@ -943,14 +877,15 @@ class VentanaAFN:
                 self.afn
             )
 
-            ventana_afd = VentanaAFD(
-                self.ventana,
-                afd_convertido
-            )
-
-            # Evitar que Python elimine la referencia
-            # de la ventana inmediatamente.
-            self.ventana_afd_convertida = ventana_afd
+            raiz = self.ventana.master
+            if self._after_animacion is not None:
+                try:
+                    self.ventana.after_cancel(self._after_animacion)
+                except tk.TclError:
+                    pass
+                self._after_animacion = None
+            self.ventana.destroy()
+            self.ventana_afd_convertida = VentanaAFD(raiz, afd_convertido)
 
         except ValueError as error:
 
@@ -967,74 +902,122 @@ class VentanaAFN:
                 f"{error}"
             )
 
-    # ==========================================================
     # SIMULAR
-    # ==========================================================
 
-    def simular(self):
+    def regresar_a_principal(self):
+        """Cierra la ventana actual y vuelve a la pantalla de selección."""
+        try:
+            if self._after_animacion is not None:
+                self.ventana.after_cancel(self._after_animacion)
+                self._after_animacion = None
+        except (tk.TclError, AttributeError):
+            pass
+        raiz = self.ventana.master
+        self.ventana.destroy()
+        try:
+            raiz.deiconify()
+            raiz.attributes("-fullscreen", True)
+            raiz.lift()
+        except tk.TclError:
+            pass
 
-        if self.afn is None:
+    def salir_del_programa(self):
+        """Cierra toda la aplicación."""
+        try:
+            if self._after_animacion is not None:
+                self.ventana.after_cancel(self._after_animacion)
+        except (tk.TclError, AttributeError):
+            pass
+        raiz = self.ventana.master
+        try:
+            raiz.destroy()
+        except tk.TclError:
+            self.ventana.destroy()
 
-            messagebox.showwarning(
-                "Advertencia",
-                "Primero debe crear el AFN."
+    def asegurar_visualizador(self):
+        if self.visualizador is None:
+            self.visualizador = Visualizador(self.ventana, self.contenedor_grafico)
+        self.ventana.update_idletasks()
+        automata = self.afn
+        if automata is not None:
+            self.visualizador.dibujar_automata(
+                estados=automata.estados,
+                transiciones=automata.transiciones,
+                estado_inicial=automata.estado_inicial,
+                estados_finales=automata.estados_finales
             )
-
-            return
-
-        cadena = self.entrada_cadena.get()
-
-        recorrido, aceptada = (
-            self.afn.obtener_recorrido(cadena)
-        )
-
-        if aceptada:
-
-            self.resultado_simulacion.config(
-                text="✓ CADENA ACEPTADA",
-                fg="#218c74"
-            )
-
-        else:
-
-            self.resultado_simulacion.config(
-                text="✗ CADENA RECHAZADA",
-                fg="#c0392b"
-            )
-
-        self.mostrar_recorrido(
-            recorrido
-        )
-
-    # ==========================================================
-    # VISUALIZAR AFN
-    # ==========================================================
 
     def visualizar(self):
-
         if self.afn is None:
+            messagebox.showwarning("Advertencia", "Primero debe crear el AFN.")
+            return
+        self.asegurar_visualizador()
 
-            messagebox.showwarning(
-                "Advertencia",
-                "Primero debe crear el AFN."
+    def animar_estados(self, cuadros, indice=0):
+        if not cuadros or self.afn is None:
+            return
+        if self._after_animacion is not None:
+            try:
+                self.ventana.after_cancel(self._after_animacion)
+            except tk.TclError:
+                pass
+            self._after_animacion = None
+        self.asegurar_visualizador()
+        automata = self.afn
+        self.visualizador.dibujar_automata(
+            estados=automata.estados,
+            transiciones=automata.transiciones,
+            estado_inicial=automata.estado_inicial,
+            estados_finales=automata.estados_finales,
+            estados_activos=cuadros[indice]
+        )
+        if indice + 1 < len(cuadros):
+            self._after_animacion = self.ventana.after(
+                550, lambda: self.animar_estados_siguiente(cuadros, indice + 1)
             )
 
+    def animar_estados_siguiente(self, cuadros, indice):
+        automata = self.afn
+        if automata is None or self.visualizador is None:
             return
-
-        visualizador = Visualizador(
-            self.ventana
+        self.visualizador.dibujar_automata(
+            estados=automata.estados,
+            transiciones=automata.transiciones,
+            estado_inicial=automata.estado_inicial,
+            estados_finales=automata.estados_finales,
+            estados_activos=cuadros[indice]
         )
+        if indice + 1 < len(cuadros):
+            self._after_animacion = self.ventana.after(
+                550, lambda: self.animar_estados_siguiente(cuadros, indice + 1)
+            )
+        else:
+            self._after_animacion = None
 
-        visualizador.dibujar_automata(
-            estados=self.afn.estados,
-            transiciones=self.afn.transiciones,
-            estado_inicial=self.afn.estado_inicial,
-            estados_finales=self.afn.estados_finales
+    def simular(self):
+        if self.afn is None:
+            messagebox.showwarning("Advertencia", "Primero debe crear el AFN.")
+            return
+        cadena = self.entrada_cadena.get()
+        recorrido, aceptada = self.afn.obtener_recorrido(cadena)
+        self.resultado_simulacion.config(
+            text="✓ CADENA ACEPTADA" if aceptada else "✗ CADENA RECHAZADA",
+            fg="#218c74" if aceptada else "#c0392b"
         )
+        self.mostrar_recorrido(recorrido)
+        actuales = self.afn.epsilon_cierre({self.afn.estado_inicial})
+        cuadros = [set(actuales)]
+        for simbolo in cadena:
+            if simbolo not in self.afn.alfabeto:
+                break
+            siguientes = set()
+            for estado in actuales:
+                siguientes.update(self.afn.transiciones.get((estado, simbolo), set()))
+            actuales = self.afn.epsilon_cierre(siguientes)
+            cuadros.append(set(actuales))
+        self.animar_estados(cuadros)
 
-    # ==========================================================
     # MOSTRAR RECORRIDO
-    # ==========================================================
 
     def mostrar_recorrido(self, recorrido):
 
@@ -1056,9 +1039,7 @@ class VentanaAFN:
             state="disabled"
         )
 
-    # ==========================================================
     # LIMPIAR RECORRIDO
-    # ==========================================================
 
     def limpiar_recorrido(self):
 
