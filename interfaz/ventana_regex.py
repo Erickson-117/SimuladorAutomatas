@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -8,6 +9,9 @@ from interfaz.visualizador import Visualizador
 from algoritmos.conversion import convertir_afn_a_afd
 from algoritmos.minimizacion import minimizar_afd
 from interfaz.ventana_minimizacion import VentanaMinimizacion
+
+
+logger = logging.getLogger(__name__)
 
 
 class VentanaExpresionesRegulares:
@@ -119,20 +123,24 @@ class VentanaExpresionesRegulares:
         ).pack(anchor="w")
 
     def validar_expresion(self):
+        logger.info("Acción iniciada: validar_expresion")
         try:
             compilar_expresion(self.expresion_var.get())
         except ValueError as error:
+            logger.warning("Expresión regular no válida: %s", error)
             self.resultado.config(text=f"✗ {error}", foreground="#b42318")
             return False
         self.resultado.config(text="✓ Expresión regular válida. Ya puedes probar cadenas.", foreground="#087f5b")
         return True
 
     def probar_cadena(self):
+        logger.info("Acción iniciada: probar_cadena")
         expresion = self.expresion_var.get()
         cadena = self.cadena_var.get()
         try:
             aceptada = validar_cadena(expresion, cadena)
         except ValueError as error:
+            logger.warning("No se pudo validar la cadena con la expresión regular: %s", error)
             self.resultado.config(text=f"✗ {error}", foreground="#b42318")
             return
         if aceptada:
@@ -146,6 +154,7 @@ class VentanaExpresionesRegulares:
 
         Presenta un resumen visual y separa cada recorrido en una pestaña.
         """
+        logger.info("Acción iniciada: comparar_automatas")
         expresion = self.expresion_var.get().strip()
         cadena = self.cadena_var.get()
 
@@ -320,10 +329,12 @@ class VentanaExpresionesRegulares:
         ttk.Button(pie, text="Cerrar", command=ventana.destroy).pack(side="right")
 
     def generar_afn(self):
+        logger.info("Acción iniciada: generar_afn")
         expresion = self.expresion_var.get()
         try:
             afn = generar_afn_thompson(expresion)
         except ValueError as error:
+            logger.warning("No se pudo generar el AFN desde la expresión regular: %s", error)
             self.resultado.config(text=f"✗ No se pudo generar el AFN: {error}", foreground="#b42318")
             return
 
@@ -349,6 +360,7 @@ class VentanaExpresionesRegulares:
 
     def convertir_a_afd(self):
         """Genera el AFN actual si hace falta y lo convierte a AFD."""
+        logger.info("Acción iniciada: convertir_a_afd")
         expresion = self.expresion_var.get()
         try:
             # Siempre construir desde la expresión actual para evitar convertir
@@ -356,6 +368,7 @@ class VentanaExpresionesRegulares:
             afn = generar_afn_thompson(expresion)
             afd = convertir_afn_a_afd(afn)
         except (ValueError, TypeError) as error:
+            logger.error("No se pudo convertir la expresión a AFD: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo convertir a AFD: {error}",
                 foreground="#b42318",
@@ -378,11 +391,13 @@ class VentanaExpresionesRegulares:
 
     def minimizar_afd(self):
         """Convierte la expresión actual a AFD y abre la minimización paso a paso."""
+        logger.info("Acción iniciada: minimizar_afd")
         expresion = self.expresion_var.get()
         try:
             afn = generar_afn_thompson(expresion)
             afd = convertir_afn_a_afd(afn)
         except (ValueError, TypeError) as error:
+            logger.error("No se pudo preparar el AFD para minimizar: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo preparar el AFD para minimizar: {error}",
                 foreground="#b42318",
@@ -397,6 +412,7 @@ class VentanaExpresionesRegulares:
         try:
             VentanaMinimizacion(self.ventana, afd)
         except (ValueError, TypeError) as error:
+            logger.error("No se pudo abrir la minimización del AFD: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo minimizar el AFD: {error}",
                 foreground="#b42318",

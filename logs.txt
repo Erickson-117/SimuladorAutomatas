@@ -1,0 +1,10 @@
+2026-10-29 10:27:43 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 10:27:46 | INFO | interfaz.principal | Se abrió el módulo de creación de AFD
+2026-10-29 10:27:48 | INFO | interfaz.ventana_afd | Acción iniciada: crear_afd
+2026-10-29 10:27:48 | WARNING | interfaz.ventana_afd | No se pudo crear el AFD: Debe ingresar al menos un estado.
+2026-10-29 10:27:50 | INFO | interfaz.ventana_afd | Acción iniciada: simular AFD
+2026-10-29 10:27:50 | WARNING | interfaz.ventana_afd | No se pudo probar la cadena: primero debe crear el AFD.
+2026-10-29 10:27:55 | INFO | interfaz.ventana_afd | Acción iniciada: crear_afd
+2026-10-29 10:27:55 | WARNING | interfaz.ventana_afd | No se pudo crear el AFD: Debe ingresar al menos un estado.
+2026-10-29 10:27:59 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:27:59 | INFO | interfaz.ventana_logs | Se abrió el visor de logs

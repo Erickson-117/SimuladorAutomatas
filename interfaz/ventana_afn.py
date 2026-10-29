@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -5,6 +6,9 @@ from modelos.afn import AFN
 from algoritmos.conversion import convertir_afn_a_afd
 from interfaz.visualizador import Visualizador
 from interfaz.ventana_afd import VentanaAFD
+
+
+logger = logging.getLogger(__name__)
 
 
 class VentanaAFN:
@@ -581,6 +585,7 @@ class VentanaAFN:
     # CREAR AFN
 
     def crear_afn(self):
+        logger.info("Acción iniciada: crear_afn")
 
         try:
 
@@ -837,7 +842,8 @@ class VentanaAFN:
         # ERROR
 
         except ValueError as error:
-
+            # La entrada no cumple los requisitos para crear el AFN.
+            logger.warning("No se pudo crear el AFN: %s", error)
             self.afn = None
 
             self.boton_visualizar.config(
@@ -861,9 +867,10 @@ class VentanaAFN:
     # CONVERTIR AFN A AFD
 
     def convertir_a_afd(self):
+        logger.info("Acción iniciada: convertir_a_afd")
 
         if self.afn is None:
-
+            logger.warning("No se pudo convertir a AFD: primero debe crear el AFN")
             messagebox.showwarning(
                 "Advertencia",
                 "Primero debe crear el AFN."
@@ -888,14 +895,14 @@ class VentanaAFN:
             self.ventana_afd_convertida = VentanaAFD(raiz, afd_convertido)
 
         except ValueError as error:
-
+            logger.error("Error al convertir el AFN a AFD: %s", error)
             messagebox.showerror(
                 "Error en la conversión",
                 str(error)
             )
 
         except Exception as error:
-
+            logger.exception("Fallo inesperado al convertir el AFN a AFD")
             messagebox.showerror(
                 "Error",
                 f"No fue posible convertir el AFN a AFD.\n\n"
@@ -949,6 +956,7 @@ class VentanaAFN:
 
     def visualizar(self):
         if self.afn is None:
+            logger.warning("No se pudo validar la cadena: primero debe crear el AFN")
             messagebox.showwarning("Advertencia", "Primero debe crear el AFN.")
             return
         self.asegurar_visualizador()
@@ -995,10 +1003,18 @@ class VentanaAFN:
             self._after_animacion = None
 
     def simular(self):
+        logger.info("Acción iniciada: simular AFN")
         if self.afn is None:
+            mensaje = "No se pudo probar la cadena: primero debe crear el AFN."
+            logger.warning(mensaje)
             messagebox.showwarning("Advertencia", "Primero debe crear el AFN.")
             return
         cadena = self.entrada_cadena.get()
+        if not cadena.strip():
+            mensaje = "No se pudo probar la cadena: el campo de cadena está vacío."
+            logger.warning(mensaje)
+            messagebox.showwarning("Cadena vacía", "Introduce una cadena antes de probarla.")
+            return
         recorrido, aceptada = self.afn.obtener_recorrido(cadena)
         self.resultado_simulacion.config(
             text="✓ CADENA ACEPTADA" if aceptada else "✗ CADENA RECHAZADA",

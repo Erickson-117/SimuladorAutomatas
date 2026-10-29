@@ -1,9 +1,13 @@
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 from modelos.afd import AFD
 from interfaz.visualizador import Visualizador
 from interfaz.ventana_minimizacion import VentanaMinimizacion
+
+
+logger = logging.getLogger(__name__)
 
 
 class VentanaAFD:
@@ -666,6 +670,7 @@ class VentanaAFD:
     # CREAR AFD
 
     def crear_afd(self):
+        logger.info("Acción iniciada: crear_afd")
 
         try:
 
@@ -906,7 +911,8 @@ class VentanaAFD:
         # ERROR
 
         except ValueError as error:
-
+            # La entrada no cumple los requisitos para crear el AFD.
+            logger.warning("No se pudo crear el AFD: %s", error)
             self.afd = None
 
             self.boton_visualizar.config(state="disabled")
@@ -969,6 +975,7 @@ class VentanaAFD:
 
     def visualizar(self):
         if self.afd is None:
+            logger.warning("No se pudo validar la cadena: primero debe crear el AFD")
             messagebox.showwarning("Advertencia", "Primero debe crear el AFD.")
             return
         self.asegurar_visualizador()
@@ -1015,19 +1022,29 @@ class VentanaAFD:
             self._after_animacion = None
 
     def abrir_minimizacion(self):
+        logger.info("Acción iniciada: abrir_minimizacion")
         if self.afd is None:
             messagebox.showwarning("Advertencia", "Primero debe crear o cargar un AFD.")
             return
         try:
             VentanaMinimizacion(self.ventana, self.afd)
         except (ValueError, TypeError) as error:
+            logger.error("No se pudo abrir la minimización del AFD: %s", error)
             messagebox.showerror("Error de minimización", str(error))
 
     def simular(self):
+        logger.info("Acción iniciada: simular AFD")
         if self.afd is None:
+            mensaje = "No se pudo probar la cadena: primero debe crear el AFD."
+            logger.warning(mensaje)
             messagebox.showwarning("Advertencia", "Primero debe crear el AFD.")
             return
         cadena = self.entrada_cadena.get()
+        if not cadena.strip():
+            mensaje = "No se pudo probar la cadena: el campo de cadena está vacío."
+            logger.warning(mensaje)
+            messagebox.showwarning("Cadena vacía", "Introduce una cadena antes de probarla.")
+            return
         recorrido, aceptada = self.afd.obtener_recorrido(cadena)
         self.resultado_simulacion.config(
             text="✓ CADENA ACEPTADA" if aceptada else "✗ CADENA RECHAZADA",

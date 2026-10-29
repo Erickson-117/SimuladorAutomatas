@@ -1,9 +1,13 @@
+import logging
 import tkinter as tk
 from tkinter import ttk
 
 from interfaz.ventana_afd import VentanaAFD
 from interfaz.ventana_afn import VentanaAFN
 from interfaz.ventana_regex import VentanaExpresionesRegulares
+from interfaz.ventana_logs import VentanaLogs
+
+logger = logging.getLogger(__name__)
 
 
 class Aplicacion:
@@ -183,6 +187,19 @@ class Aplicacion:
             pady=10
         )
 
+        boton_logs = ttk.Button(
+            botones,
+            text="Visor de logs",
+            style="Principal.TButton",
+            command=self.abrir_logs
+        )
+        boton_logs.grid(
+            row=1,
+            column=1,
+            padx=15,
+            pady=10
+        )
+
         # INFORMACIÓN
      
 
@@ -285,15 +302,23 @@ class Aplicacion:
         ).pack(side="right")
     def abrir_afd(self):
         """Oculta la pantalla principal y abre una única ventana de trabajo."""
+        logger.info("Se abrió el módulo de creación de AFD")
         self.ventana.withdraw()
         VentanaAFD(self.ventana)
 
     def abrir_afn(self):
         """Oculta la pantalla principal y abre una única ventana de trabajo."""
+        logger.info("Se abrió el módulo de creación de AFN")
         self.ventana.withdraw()
         VentanaAFN(self.ventana)
 
     def abrir_expresiones_regulares(self):
         """Abre el módulo inicial de validación de expresiones regulares."""
+        logger.info("Se abrió el módulo de expresiones regulares")
         self.ventana.withdraw()
         VentanaExpresionesRegulares(self.ventana)
+
+    def abrir_logs(self):
+        """Abre el visor de registros sin ocultar la ventana principal."""
+        logger.info("Se solicitó abrir el visor de logs")
+        VentanaLogs(self.ventana)
