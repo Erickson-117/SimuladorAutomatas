@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from interfaz.ventana_afd import VentanaAFD
 from interfaz.ventana_afn import VentanaAFN
+from interfaz.ventana_regex import VentanaExpresionesRegulares
 
 
 class Aplicacion:
@@ -169,6 +170,19 @@ class Aplicacion:
             pady=10
         )
 
+        boton_regex = ttk.Button(
+            botones,
+            text="Expresiones regulares",
+            style="Principal.TButton",
+            command=self.abrir_expresiones_regulares
+        )
+        boton_regex.grid(
+            row=0,
+            column=2,
+            padx=15,
+            pady=10
+        )
+
         # INFORMACIÓN
      
 
@@ -202,6 +216,16 @@ class Aplicacion:
 
         ttk.Label(
             informacion,
+            text="Regex",
+            style="Seccion.TLabel"
+        ).grid(
+            row=0,
+            column=2,
+            padx=50
+        )
+
+        ttk.Label(
+            informacion,
             text="Autómata Finito Determinista",
             style="Subtitulo.TLabel"
         ).grid(
@@ -218,6 +242,17 @@ class Aplicacion:
         ).grid(
             row=1,
             column=1,
+            padx=50,
+            pady=(5, 0)
+        )
+
+        ttk.Label(
+            informacion,
+            text="Validar expresiones y cadenas",
+            style="Subtitulo.TLabel"
+        ).grid(
+            row=1,
+            column=2,
             padx=50,
             pady=(5, 0)
         )
@@ -257,3 +292,8 @@ class Aplicacion:
         """Oculta la pantalla principal y abre una única ventana de trabajo."""
         self.ventana.withdraw()
         VentanaAFN(self.ventana)
+
+    def abrir_expresiones_regulares(self):
+        """Abre el módulo inicial de validación de expresiones regulares."""
+        self.ventana.withdraw()
+        VentanaExpresionesRegulares(self.ventana)

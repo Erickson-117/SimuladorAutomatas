@@ -160,3 +160,25 @@ def test_minimizacion_no_modifica_afd_original():
     minimo, _ = minimizar_afd(original)
     assert original.estados == estados_antes
     assert len(minimo.estados) == 2
+
+
+def test_regex_acepta_coincidencia_completa():
+    from algoritmos.expresiones_regulares import validar_cadena
+
+    assert validar_cadena(r"(0|1)*01", "1101") is True
+    assert validar_cadena(r"(0|1)*01", "01") is True
+
+
+def test_regex_rechaza_coincidencia_parcial():
+    from algoritmos.expresiones_regulares import validar_cadena
+
+    assert validar_cadena(r"(0|1)*01", "010") is False
+    assert validar_cadena(r"(0|1)*01", "110") is False
+
+
+def test_regex_detecta_sintaxis_invalida():
+    import pytest
+    from algoritmos.expresiones_regulares import validar_cadena
+
+    with pytest.raises(ValueError, match="no es válida"):
+        validar_cadena("(01", "01")
