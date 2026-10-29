@@ -1,4 +1,8 @@
-from algoritmos.validador_logs import analizar_linea_log, validar_archivo_logs
+from algoritmos.validador_logs import (
+    analizar_linea_log,
+    validar_archivo_logs,
+    clasificar_nivel_log,
+)
 
 
 def test_analizar_linea_log_valida():
@@ -38,3 +42,21 @@ def test_validar_archivo_logs_separa_validos_e_invalidos(tmp_path):
     assert len(validos) == 1
     assert len(invalidos) == 1
     assert invalidos[0][0] == 2
+
+
+import pytest
+
+
+@pytest.mark.parametrize("nivel", ["INFO", "WARNING", "ERROR", "CRITICAL"])
+def test_clasificar_nivel_log_mediante_regex(nivel):
+    linea = f"2026-10-28 21:15:32 | {nivel} | modulo | Evento registrado"
+    assert clasificar_nivel_log(linea) == nivel
+
+
+def test_clasificar_nivel_no_confunde_texto_del_mensaje():
+    linea = "2026-10-28 21:15:32 | INFO | modulo | El texto menciona | ERROR | como ejemplo"
+    assert clasificar_nivel_log(linea) == "INFO"
+
+
+def test_clasificar_nivel_log_rechaza_linea_sin_formato():
+    assert clasificar_nivel_log("Ha ocurrido un ERROR") is None

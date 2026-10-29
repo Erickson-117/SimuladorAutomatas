@@ -8,3 +8,94 @@
 2026-10-29 10:27:55 | WARNING | interfaz.ventana_afd | No se pudo crear el AFD: Debe ingresar al menos un estado.
 2026-10-29 10:27:59 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
 2026-10-29 10:27:59 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:32:28 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 10:32:29 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:32:29 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:32:32 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 10:32:36 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:32:54 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:38:32 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:38:42 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:38:42 | WARNING | interfaz.ventana_regex | Expresión regular no válida: La expresión regular no es válida: missing ), unterminated subpattern at position 0
+2026-10-29 10:39:02 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:39:02 | WARNING | interfaz.ventana_regex | No se pudo validar la cadena con la expresión regular: La expresión regular no es válida: missing ), unterminated subpattern at position 0
+2026-10-29 10:39:03 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:39:03 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: Hay un paréntesis de apertura sin cierre.
+2026-10-29 10:39:06 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
+2026-10-29 10:39:06 | ERROR | interfaz.ventana_regex | No se pudo convertir la expresión a AFD: Hay un paréntesis de apertura sin cierre.
+2026-10-29 10:39:07 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
+2026-10-29 10:39:07 | ERROR | interfaz.ventana_regex | No se pudo preparar el AFD para minimizar: Hay un paréntesis de apertura sin cierre.
+2026-10-29 10:39:10 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:39:10 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:40:57 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 10:41:03 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:41:03 | WARNING | interfaz.ventana_regex | Expresión regular no válida: La expresión regular no es válida: missing ), unterminated subpattern at position 0
+2026-10-29 10:41:12 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:41:12 | WARNING | interfaz.ventana_regex | Expresión regular no válida: La expresión regular no es válida: missing ), unterminated subpattern at position 0
+2026-10-29 10:41:18 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:41:18 | WARNING | interfaz.ventana_regex | Expresión regular no válida: La expresión regular no es válida: missing ), unterminated subpattern at position 0
+2026-10-29 10:42:26 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:42:28 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:42:28 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: El operador '[' no está soportado para generar AFN.
+2026-10-29 10:42:32 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
+2026-10-29 10:42:32 | ERROR | interfaz.ventana_regex | No se pudo convertir la expresión a AFD: El operador '[' no está soportado para generar AFN.
+2026-10-29 10:42:33 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
+2026-10-29 10:42:33 | ERROR | interfaz.ventana_regex | No se pudo preparar el AFD para minimizar: El operador '[' no está soportado para generar AFN.
+2026-10-29 10:42:33 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:42:42 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:42:46 | INFO | interfaz.ventana_regex | Acción iniciada: comparar_automatas
+2026-10-29 10:43:06 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:13 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:18 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:18 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:43:19 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:24 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:25 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:43:27 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:43:27 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: La generación de AFN no admite escapes con barra invertida.
+2026-10-29 10:43:38 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
+2026-10-29 10:43:38 | ERROR | interfaz.ventana_regex | No se pudo convertir la expresión a AFD: La generación de AFN no admite escapes con barra invertida.
+2026-10-29 10:43:41 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:43:54 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:43:55 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:43:55 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: La generación de AFN no admite escapes con barra invertida.
+2026-10-29 10:44:08 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:44:23 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:44:24 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:44:24 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: El operador '[' no está soportado para generar AFN.
+2026-10-29 10:44:29 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:44:32 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:44:37 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:44:37 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:45:03 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 10:45:30 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:45:46 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:45:49 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:45:50 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:45:50 | WARNING | interfaz.ventana_regex | Expresión regular no válida: La expresión regular no es válida: unterminated character set at position 1
+2026-10-29 10:46:27 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:46:27 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:46:27 | WARNING | interfaz.ventana_regex | No se pudo generar el AFN desde la expresión regular: El operador '[' no está soportado para generar AFN.
+2026-10-29 10:52:52 | INFO | interfaz.principal | Se abrió el módulo de creación de AFD
+2026-10-29 10:52:58 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 10:53:01 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 10:53:13 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 10:53:16 | INFO | interfaz.ventana_regex | Acción iniciada: probar_cadena
+2026-10-29 10:53:19 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 10:53:25 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
+2026-10-29 10:53:28 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
+2026-10-29 10:53:47 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:53:47 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:54:22 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 10:54:33 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 10:54:33 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 10:54:36 | INFO | interfaz.ventana_logs | Validación del archivo de logs completada: 91 válidos, 0 inválidos
+2026-10-29 10:55:09 | INFO | interfaz.ventana_logs | Validación del archivo de logs completada: 92 válidos, 0 inválidos
+2026-10-29 11:00:56 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 11:00:56 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 16:37:12 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 16:37:13 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 16:37:13 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 16:39:04 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 16:39:05 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 16:39:05 | INFO | interfaz.ventana_logs | Se abrió el visor de logs

@@ -3,7 +3,9 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import ttk, messagebox
 
-from algoritmos.validador_logs import validar_archivo_logs, NIVELES_LOG
+from algoritmos.validador_logs import (
+    validar_archivo_logs, NIVELES_LOG, clasificar_nivel_log
+)
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +99,16 @@ class VentanaLogs:
         registros, invalidos = validar_archivo_logs(self.ruta_logs)
         filtro = self.buscar_var.get().strip()
         for registro in registros:
-            # El nivel ya fue extraído y validado por analizar_linea_log().
-            # No hace falta volver a buscarlo con otra expresión regular.
-            nivel = registro["nivel"]
+            # Clasificamos el registro mediante los patrones Regex definidos
+            # en validador_logs.py. La línea ya pasó la validación de formato.
+            nivel = clasificar_nivel_log(registro["linea"])
+            if nivel not in self.tablas:
+                # No mostrar un registro si no se pudo reconocer su nivel.
+                logger.warning(
+                    "No se pudo clasificar un registro de log: %s",
+                    registro["linea"],
+                )
+                continue
             texto_busqueda = registro["linea"]
             if filtro and filtro.casefold() not in texto_busqueda.casefold():
                 continue

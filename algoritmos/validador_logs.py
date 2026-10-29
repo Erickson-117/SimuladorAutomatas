@@ -12,6 +12,31 @@ PATRON_LOG = re.compile(
 
 NIVELES_LOG = ("INFO", "WARNING", "ERROR", "CRITICAL")
 
+# Patrones para reconocer el nivel en su campo del registro, no en el mensaje.
+# Se ancla la búsqueda al comienzo de la línea y al separador posterior al nivel.
+PATRONES_NIVELES_LOG = {
+    nivel: re.compile(
+        rf"^\d{{4}}-\d{{2}}-\d{{2}} "
+        rf"(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d "
+        rf"\|\s*{nivel}\s*\|"
+    )
+    for nivel in NIVELES_LOG
+}
+
+
+def clasificar_nivel_log(linea):
+    """Clasifica una línea mediante regex según el nivel de su campo.
+
+    Devuelve INFO, WARNING, ERROR o CRITICAL. Devuelve None si ningún
+    patrón reconoce un nivel en la posición esperada del registro.
+    La línea debería validarse primero con analizar_linea_log().
+    """
+    texto = linea.rstrip("\r\n")
+    for nivel, patron in PATRONES_NIVELES_LOG.items():
+        if patron.search(texto):
+            return nivel
+    return None
+
 
 def analizar_linea_log(linea):
     """Valida una línea de log con regex y valida además la fecha real."""
