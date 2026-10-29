@@ -6,6 +6,7 @@ from algoritmos.expresiones_regulares import (
 )
 from interfaz.visualizador import Visualizador
 from algoritmos.conversion import convertir_afn_a_afd
+from algoritmos.minimizacion import minimizar_afd
 from interfaz.ventana_minimizacion import VentanaMinimizacion
 
 
@@ -94,6 +95,12 @@ class VentanaExpresionesRegulares:
         self.entrada_cadena.pack(side="left", fill="x", expand=True, padx=(0, 12))
         self.entrada_cadena.bind("<Return>", lambda _evento: self.probar_cadena())
         ttk.Button(fila_cadena, text="Probar cadena", style="Regex.TButton", command=self.probar_cadena).pack(side="left")
+        ttk.Button(
+            fila_cadena,
+            text="Comparar AFN, AFD y mínimo",
+            style="Regex.TButton",
+            command=self.comparar_automatas,
+        ).pack(side="left", padx=(8, 0))
 
         self.resultado = ttk.Label(panel, text="Ingresa una expresión y prueba una cadena.", font=("Segoe UI", 13, "bold"), background="#f4f6f8", padding=16)
         self.resultado.pack(fill="x", pady=(20, 12))
@@ -133,6 +140,184 @@ class VentanaExpresionesRegulares:
         else:
             self.resultado.config(text=f"✗ CADENA RECHAZADA: «{cadena}» no coincide con la expresión.", foreground="#b42318")
 
+
+    def comparar_automatas(self):
+        """Simula una cadena en el AFN, el AFD y el AFD minimizado.
+
+        Presenta un resumen visual y separa cada recorrido en una pestaña.
+        """
+        expresion = self.expresion_var.get().strip()
+        cadena = self.cadena_var.get()
+
+        try:
+            afn = generar_afn_thompson(expresion)
+            afd = convertir_afn_a_afd(afn)
+            afd_minimo, _pasos = minimizar_afd(afd)
+
+            recorrido_afn, acepta_afn = afn.obtener_recorrido(cadena)
+            recorrido_afd, acepta_afd = afd.obtener_recorrido(cadena)
+            recorrido_minimo, acepta_minimo = afd_minimo.obtener_recorrido(cadena)
+        except (ValueError, TypeError, KeyError) as error:
+            self.resultado.config(
+                text=f"✗ No se pudo comparar los autómatas: {error}",
+                foreground="#b42318",
+            )
+            return
+
+        coinciden = acepta_afn == acepta_afd == acepta_minimo
+        estado = "✓ Los tres autómatas coinciden." if coinciden else "⚠ Hay resultados diferentes."
+        color = "#087f5b" if coinciden else "#b42318"
+        self.resultado.config(
+            text=(
+                f"{estado} Cadena «{cadena}»: "
+                f"AFN={'ACEPTADA' if acepta_afn else 'RECHAZADA'}, "
+                f"AFD={'ACEPTADA' if acepta_afd else 'RECHAZADA'}, "
+                f"AFD mínimo={'ACEPTADA' if acepta_minimo else 'RECHAZADA'}."
+            ),
+            foreground=color,
+        )
+
+        ventana = tk.Toplevel(self.ventana)
+        ventana.title("Comparación de simulación de autómatas")
+        ventana.geometry("1050x760")
+        ventana.minsize(780, 560)
+        ventana.configure(bg="#f4f6f8")
+
+        estilo = ttk.Style(ventana)
+        try:
+            estilo.theme_use("clam")
+        except tk.TclError:
+            pass
+        estilo.configure("Comparacion.TFrame", background="#f4f6f8")
+        estilo.configure("Comparacion.TLabel", background="#f4f6f8", foreground="#17202a")
+        estilo.configure("Comparacion.Titulo.TLabel", background="#f4f6f8", foreground="#17202a", font=("Segoe UI", 17, "bold"))
+        estilo.configure("Comparacion.Subtitulo.TLabel", background="#f4f6f8", foreground="#586574", font=("Segoe UI", 10))
+        estilo.configure("Comparacion.TNotebook", padding=5)
+        estilo.configure("Comparacion.TNotebook.Tab", padding=(18, 9), font=("Segoe UI", 10, "bold"))
+
+        contenedor = ttk.Frame(ventana, style="Comparacion.TFrame", padding=18)
+        contenedor.pack(fill="both", expand=True)
+
+        ttk.Label(
+            contenedor,
+            text="Comparación de autómatas",
+            style="Comparacion.Titulo.TLabel",
+        ).pack(anchor="w")
+        ttk.Label(
+            contenedor,
+            text=f"Expresión regular:  {expresion}     |     Cadena evaluada:  {cadena!r}",
+            style="Comparacion.Subtitulo.TLabel",
+        ).pack(anchor="w", pady=(4, 14))
+
+        # Resumen en tres tarjetas para distinguir rápidamente cada resultado.
+        tarjetas = ttk.Frame(contenedor, style="Comparacion.TFrame")
+        tarjetas.pack(fill="x", pady=(0, 12))
+        resultados = (
+            ("AFN", acepta_afn),
+            ("AFD", acepta_afd),
+            ("AFD mínimo", acepta_minimo),
+        )
+        for columna, (nombre, aceptada) in enumerate(resultados):
+            tarjetas.columnconfigure(columna, weight=1, uniform="resultado")
+            tarjeta = tk.Frame(
+                tarjetas,
+                bg="white",
+                highlightbackground="#d7dee7",
+                highlightthickness=1,
+                padx=14,
+                pady=12,
+            )
+            tarjeta.grid(row=0, column=columna, sticky="nsew", padx=(0 if columna == 0 else 6, 6 if columna < 2 else 0))
+            tk.Label(
+                tarjeta, text=nombre, bg="white", fg="#344054",
+                font=("Segoe UI", 10, "bold"),
+            ).pack(anchor="w")
+            tk.Label(
+                tarjeta,
+                text="✓ ACEPTADA" if aceptada else "✗ RECHAZADA",
+                bg="white", fg="#087f5b" if aceptada else "#b42318",
+                font=("Segoe UI", 13, "bold"),
+            ).pack(anchor="w", pady=(5, 0))
+
+        estado_texto = (
+            "VERIFICACIÓN CORRECTA · Los tres autómatas dieron el mismo resultado."
+            if coinciden else
+            "ATENCIÓN · Los resultados no coinciden. Revisa la conversión y la minimización."
+        )
+        aviso = tk.Frame(
+            contenedor,
+            bg="#e8f6ef" if coinciden else "#fff0ef",
+            padx=12,
+            pady=10,
+        )
+        aviso.pack(fill="x", pady=(0, 12))
+        tk.Label(
+            aviso,
+            text=estado_texto,
+            bg="#e8f6ef" if coinciden else "#fff0ef",
+            fg="#087f5b" if coinciden else "#b42318",
+            font=("Segoe UI", 10, "bold"),
+            anchor="w",
+            justify="left",
+            wraplength=950,
+        ).pack(fill="x")
+
+        ttk.Label(
+            contenedor,
+            text="Recorridos de la simulación",
+            style="Comparacion.TLabel",
+            font=("Segoe UI", 11, "bold"),
+        ).pack(anchor="w", pady=(0, 6))
+
+        pestañas = ttk.Notebook(contenedor, style="Comparacion.TNotebook")
+        pestañas.pack(fill="both", expand=True)
+        secciones = (
+            ("AFN", recorrido_afn, acepta_afn),
+            ("AFD", recorrido_afd, acepta_afd),
+            ("AFD mínimo", recorrido_minimo, acepta_minimo),
+        )
+        for titulo, recorrido, aceptada in secciones:
+            pagina = ttk.Frame(pestañas, padding=8)
+            pestañas.add(pagina, text=titulo)
+            pagina.rowconfigure(0, weight=1)
+            pagina.columnconfigure(0, weight=1)
+
+            texto = tk.Text(
+                pagina,
+                wrap="word",
+                font=("Consolas", 10),
+                bg="white",
+                fg="#202938",
+                relief="flat",
+                padx=14,
+                pady=12,
+                spacing1=2,
+                spacing3=5,
+                state="normal",
+            )
+            barra_scroll = ttk.Scrollbar(pagina, orient="vertical", command=texto.yview)
+            texto.configure(yscrollcommand=barra_scroll.set)
+            texto.grid(row=0, column=0, sticky="nsew")
+            barra_scroll.grid(row=0, column=1, sticky="ns")
+            texto.tag_configure("titulo", font=("Segoe UI", 11, "bold"), foreground="#175cd3", spacing3=8)
+            texto.tag_configure("resultado_ok", font=("Consolas", 10, "bold"), foreground="#087f5b")
+            texto.tag_configure("resultado_error", font=("Consolas", 10, "bold"), foreground="#b42318")
+
+            texto.insert(tk.END, f"RECORRIDO DEL {titulo.upper()}\n", "titulo")
+            texto.insert(tk.END, "─" * 42 + "\n\n")
+            for numero, paso in enumerate(recorrido, start=1):
+                texto.insert(tk.END, f"{numero:02d}.  {paso}\n")
+            texto.insert(tk.END, "\n")
+            texto.insert(
+                tk.END,
+                f"RESULTADO FINAL: {'ACEPTADA' if aceptada else 'RECHAZADA'}",
+                "resultado_ok" if aceptada else "resultado_error",
+            )
+            texto.configure(state="disabled")
+
+        pie = ttk.Frame(contenedor, style="Comparacion.TFrame")
+        pie.pack(fill="x", pady=(10, 0))
+        ttk.Button(pie, text="Cerrar", command=ventana.destroy).pack(side="right")
 
     def generar_afn(self):
         expresion = self.expresion_var.get()
