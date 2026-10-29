@@ -99,3 +99,11 @@
 2026-10-29 16:39:04 | INFO | __main__ | Inicio del Simulador de Autómatas
 2026-10-29 16:39:05 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
 2026-10-29 16:39:05 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 17:10:37 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 17:10:39 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 17:10:39 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 17:10:42 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias
+2026-10-29 17:12:17 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 17:12:19 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 17:12:19 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 17:12:21 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias

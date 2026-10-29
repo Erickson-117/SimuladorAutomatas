@@ -6,6 +6,7 @@ from tkinter import ttk, messagebox
 from algoritmos.validador_logs import (
     validar_archivo_logs, NIVELES_LOG, clasificar_nivel_log
 )
+from interfaz.ventana_analisis_logs import VentanaAnalisisLogs
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,9 @@ class VentanaLogs:
         ).pack(side="left", padx=4)
         ttk.Button(
             controles, text="Validar formato", command=self.validar_formato
+        ).pack(side="left", padx=4)
+        ttk.Button(
+            controles, text="Analizar errores", command=self.abrir_analisis
         ).pack(side="left", padx=4)
         ttk.Button(
             controles, text="Ubicación del archivo", command=self.abrir_ubicacion
@@ -125,6 +129,10 @@ class VentanaLogs:
             f"{total} registro(s) mostrado(s) · "
             f"{len(invalidos)} línea(s) con formato inválido · Archivo: {self.ruta_logs.name}"
         )
+
+    def abrir_analisis(self):
+        """Abre el análisis de advertencias y errores mediante reglas."""
+        VentanaAnalisisLogs(self.ventana, self.ruta_logs)
 
     def validar_formato(self):
         registros, invalidos = validar_archivo_logs(self.ruta_logs)
