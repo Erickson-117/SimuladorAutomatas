@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 
 from modelos.afd import AFD
 from interfaz.visualizador import Visualizador
+from interfaz.ventana_minimizacion import VentanaMinimizacion
 
 
 class VentanaAFD:
@@ -335,6 +336,15 @@ class VentanaAFD:
             side="left"
         )
 
+        self.boton_minimizar = ttk.Button(
+            botones,
+            text="Minimizar AFD",
+            style="Secundario.TButton",
+            command=self.abrir_minimizacion,
+            state="disabled"
+        )
+        self.boton_minimizar.pack(side="left", padx=(8, 0))
+
         self.resultado = tk.Label(
             botones,
             text="",
@@ -568,6 +578,10 @@ class VentanaAFD:
 
         if self.afd is None:
             return
+
+        # Un AFD recibido desde la conversión AFN → AFD también puede minimizarse.
+        self.boton_visualizar.config(state="normal")
+        self.boton_minimizar.config(state="normal")
 
         # ESTADOS
 
@@ -879,9 +893,8 @@ class VentanaAFD:
                 fg="#218c74"
             )
 
-            self.boton_visualizar.config(
-                state="normal"
-            )
+            self.boton_visualizar.config(state="normal")
+            self.boton_minimizar.config(state="normal")
 
             self.resultado_simulacion.config(
                 text="Aún no se ha probado ninguna cadena.",
@@ -896,9 +909,8 @@ class VentanaAFD:
 
             self.afd = None
 
-            self.boton_visualizar.config(
-                state="disabled"
-            )
+            self.boton_visualizar.config(state="disabled")
+            self.boton_minimizar.config(state="disabled")
 
             self.resultado.config(
                 text="✗ Error al crear el AFD.",
@@ -1001,6 +1013,15 @@ class VentanaAFD:
             )
         else:
             self._after_animacion = None
+
+    def abrir_minimizacion(self):
+        if self.afd is None:
+            messagebox.showwarning("Advertencia", "Primero debe crear o cargar un AFD.")
+            return
+        try:
+            VentanaMinimizacion(self.ventana, self.afd)
+        except (ValueError, TypeError) as error:
+            messagebox.showerror("Error de minimización", str(error))
 
     def simular(self):
         if self.afd is None:

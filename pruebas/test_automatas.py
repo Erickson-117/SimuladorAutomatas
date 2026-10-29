@@ -123,3 +123,40 @@ def test_conversion_afn_a_afd():
     assert afd.simular("01")
 
     assert not afd.simular("0")
+
+def test_minimizacion_fusiona_estados_equivalentes_y_preserva_lenguaje():
+    from algoritmos.minimizacion import minimizar_afd
+
+    # q0 y q1 son equivalentes; qx es inaccesible.
+    estados = {"q0", "q1", "q2", "qx"}
+    alfabeto = {"0", "1"}
+    transiciones = {
+        ("q0", "0"): "q1", ("q0", "1"): "q2",
+        ("q1", "0"): "q0", ("q1", "1"): "q2",
+        ("q2", "0"): "q2", ("q2", "1"): "q2",
+        ("qx", "0"): "qx", ("qx", "1"): "qx",
+    }
+    original = AFD(estados, alfabeto, "q0", {"q2"}, transiciones)
+
+    minimo, pasos = minimizar_afd(original)
+
+    assert len(minimo.estados) == 2
+    assert all("qx" not in estado for estado in minimo.estados)
+    assert pasos[-1]["titulo"] == "5. AFD mínimo"
+    for longitud in range(5):
+        for numero in range(2 ** longitud):
+            cadena = format(numero, f"0{longitud}b") if longitud else ""
+            assert original.simular(cadena) == minimo.simular(cadena)
+
+
+def test_minimizacion_no_modifica_afd_original():
+    from algoritmos.minimizacion import minimizar_afd
+
+    original = AFD(
+        {"a", "b"}, {"0"}, "a", {"b"},
+        {("a", "0"): "b", ("b", "0"): "b"},
+    )
+    estados_antes = set(original.estados)
+    minimo, _ = minimizar_afd(original)
+    assert original.estados == estados_antes
+    assert len(minimo.estados) == 2
