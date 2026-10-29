@@ -207,3 +207,33 @@ def test_thompson_rechaza_sintaxis_no_soportada():
         generar_afn_thompson("[0-9]+")
     with pytest.raises(ValueError):
         generar_afn_thompson("(01")
+
+
+def test_regex_thompson_conversion_afd_y_minimizacion_preservan_lenguaje():
+    from algoritmos.expresiones_regulares import generar_afn_thompson
+    from algoritmos.conversion import convertir_afn_a_afd
+    from algoritmos.minimizacion import minimizar_afd
+    from itertools import product
+
+    expresion = "(0|1)*01"
+    afn = generar_afn_thompson(expresion)
+    afd = convertir_afn_a_afd(afn)
+    minimo, _ = minimizar_afd(afd)
+
+    for longitud in range(6):
+        for caracteres in product("01", repeat=longitud):
+            cadena = "".join(caracteres)
+            esperado = afn.simular(cadena)
+            assert afd.simular(cadena) == esperado
+            assert minimo.simular(cadena) == esperado
+
+
+def test_conversion_desde_thompson_incluye_cadena_vacia_cuando_corresponde():
+    from algoritmos.expresiones_regulares import generar_afn_thompson
+    from algoritmos.conversion import convertir_afn_a_afd
+
+    afn = generar_afn_thompson("0*")
+    afd = convertir_afn_a_afd(afn)
+    assert afn.simular("") == afd.simular("") is True
+    assert afn.simular("000") == afd.simular("000") is True
+    assert afn.simular("1") == afd.simular("1") is False
