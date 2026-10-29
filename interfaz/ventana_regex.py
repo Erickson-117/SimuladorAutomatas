@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from algoritmos.expresiones_regulares import compilar_expresion, validar_cadena
+from algoritmos.expresiones_regulares import (
+    compilar_expresion, validar_cadena, generar_afn_thompson
+)
+from interfaz.visualizador import Visualizador
 
 
 class VentanaExpresionesRegulares:
@@ -53,7 +56,7 @@ class VentanaExpresionesRegulares:
         ttk.Label(panel, text="1. Expresión regular", style="Regex.Seccion.TLabel").pack(anchor="w")
         ttk.Label(
             panel,
-            text="Se utiliza la sintaxis de expresiones regulares de Python. La coincidencia debe abarcar toda la cadena.",
+            text="Para generar el AFN se admite: símbolos, unión |, concatenación, cerradura * y paréntesis. La prueba de cadenas usa la sintaxis de Python.",
             wraplength=1100,
         ).pack(anchor="w", pady=(6, 10))
 
@@ -63,6 +66,10 @@ class VentanaExpresionesRegulares:
         self.entrada_expresion = ttk.Entry(fila_expresion, textvariable=self.expresion_var, style="Regex.TEntry")
         self.entrada_expresion.pack(side="left", fill="x", expand=True, padx=(0, 12))
         ttk.Button(fila_expresion, text="Validar expresión", style="Regex.TButton", command=self.validar_expresion).pack(side="left")
+        ttk.Button(
+            fila_expresion, text="Generar AFN", style="Regex.TButton",
+            command=self.generar_afn
+        ).pack(side="left", padx=(8, 0))
 
         ttk.Label(panel, text="Ejemplos:  (0|1)*01   ·   a+b*   ·   [0-9]{2,4}", foreground="#68737d").pack(anchor="w", pady=(7, 20))
 
@@ -86,7 +93,7 @@ class VentanaExpresionesRegulares:
                 "• ACEPTADA: la cadena completa coincide con la expresión.\n"
                 "• RECHAZADA: la cadena no coincide completamente.\n"
                 "• Error de sintaxis: la expresión necesita corregirse antes de probar cadenas.\n\n"
-                "Nota: esta primera etapa valida expresiones regulares. La generación y visualización del autómata a partir de una expresión se implementará después."
+                "Nota: la generación de AFN usa el algoritmo de Thompson y admite símbolos de un carácter, |, concatenación, *, y paréntesis."
             ),
             justify="left",
             wraplength=1200,
@@ -113,6 +120,32 @@ class VentanaExpresionesRegulares:
             self.resultado.config(text=f"✓ CADENA ACEPTADA: «{cadena}» coincide con la expresión.", foreground="#087f5b")
         else:
             self.resultado.config(text=f"✗ CADENA RECHAZADA: «{cadena}» no coincide con la expresión.", foreground="#b42318")
+
+
+    def generar_afn(self):
+        expresion = self.expresion_var.get()
+        try:
+            afn = generar_afn_thompson(expresion)
+        except ValueError as error:
+            self.resultado.config(text=f"✗ No se pudo generar el AFN: {error}", foreground="#b42318")
+            return
+
+        visor = Visualizador(self.ventana)
+        visor.ventana.title(f"AFN generado por Thompson: {expresion}")
+        # Mostrar primero la ventana para que el canvas tenga dimensiones
+        # reales antes de calcular la distribución de los estados.
+        visor.ventana.update_idletasks()
+        visor.ventana.update()
+        visor.dibujar_automata(
+            afn.estados,
+            afn.transiciones,
+            afn.estado_inicial,
+            afn.estados_finales,
+        )
+        self.resultado.config(
+            text=f"✓ AFN generado: {len(afn.estados)} estados, alfabeto {sorted(afn.alfabeto)}.",
+            foreground="#087f5b",
+        )
 
     def regresar_a_principal(self):
         self.ventana.destroy()

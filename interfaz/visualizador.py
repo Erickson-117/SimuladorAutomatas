@@ -71,6 +71,11 @@ class Visualizador:
         estados_activos=None
     ):
 
+        # Asegurar que Tkinter ya calculó el tamaño real del canvas antes
+        # de ubicar los estados. Si se dibuja inmediatamente al crear la
+        # ventana, winfo_width()/winfo_height() pueden devolver 1 y todos
+        # los nodos terminan amontonados.
+        self.canvas.update_idletasks()
         self.canvas.delete("all")
         estados_activos = set(estados_activos or [])
 
@@ -86,10 +91,10 @@ class Visualizador:
         # Si Tkinter todavía no ha calculado el tamaño,
         # utilizamos dimensiones aproximadas.
         if ancho < 100:
-            ancho = 600
+            ancho = 1000 if not self.contenedor_externo else 700
 
         if alto < 80:
-            alto = 260
+            alto = 600 if not self.contenedor_externo else 350
 
         posiciones = self.calcular_posiciones(
             estados,
@@ -171,11 +176,11 @@ class Visualizador:
         # no queden pegados al borde.
 
         if self.contenedor_externo:
-            radio_x = max(45, min(180, ancho / 2 - 45))
-            radio_y = max(35, min(85, alto / 2 - 35))
+            radio_x = max(100, min(320, ancho / 2 - 65))
+            radio_y = max(90, min(190, alto / 2 - 65))
         else:
-            radio_x = min(350, ancho / 2 - 170)
-            radio_y = min(210, alto / 2 - 150)
+            radio_x = max(180, min(430, ancho / 2 - 100))
+            radio_y = max(130, min(240, alto / 2 - 100))
 
         for indice, estado in enumerate(estados):
 

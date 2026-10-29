@@ -182,3 +182,28 @@ def test_regex_detecta_sintaxis_invalida():
 
     with pytest.raises(ValueError, match="no es válida"):
         validar_cadena("(01", "01")
+
+
+def test_thompson_genera_afn_para_union_concatenacion_y_kleene():
+    from algoritmos.expresiones_regulares import generar_afn_thompson
+
+    casos = [
+        ("0", ["0", "", "1"], [True, False, False]),
+        ("0|1", ["0", "1", "01"], [True, True, False]),
+        ("01", ["01", "0", "1"], [True, False, False]),
+        ("0*", ["", "0", "000", "1"], [True, True, True, False]),
+        ("(0|1)*01", ["01", "1101", "010", ""], [True, True, False, False]),
+    ]
+    for expresion, cadenas, esperadas in casos:
+        afn = generar_afn_thompson(expresion)
+        assert [afn.simular(cadena) for cadena in cadenas] == esperadas
+
+
+def test_thompson_rechaza_sintaxis_no_soportada():
+    import pytest
+    from algoritmos.expresiones_regulares import generar_afn_thompson
+
+    with pytest.raises(ValueError):
+        generar_afn_thompson("[0-9]+")
+    with pytest.raises(ValueError):
+        generar_afn_thompson("(01")
