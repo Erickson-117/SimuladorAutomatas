@@ -6,6 +6,7 @@ from modelos.afn import AFN
 from algoritmos.conversion import convertir_afn_a_afd
 from interfaz.visualizador import Visualizador
 from interfaz.ventana_afd import VentanaAFD
+from interfaz.ventana_banco_pruebas import VentanaBancoPruebas
 
 
 logger = logging.getLogger(__name__)
@@ -354,6 +355,15 @@ class VentanaAFN:
             side="left",
             padx=(8, 0)
         )
+
+        self.boton_banco_pruebas = ttk.Button(
+            botones,
+            text="Banco de pruebas",
+            style="Secundario.TButton",
+            command=self.abrir_banco_pruebas,
+            state="disabled"
+        )
+        self.boton_banco_pruebas.pack(side="left", padx=(8, 0))
 
         self.resultado = tk.Label(
             botones,
@@ -831,6 +841,7 @@ class VentanaAFN:
             self.boton_convertir.config(
                 state="normal"
             )
+            self.boton_banco_pruebas.config(state="normal")
 
             self.resultado_simulacion.config(
                 text="Aún no se ha probado ninguna cadena.",
@@ -853,6 +864,7 @@ class VentanaAFN:
             self.boton_convertir.config(
                 state="disabled"
             )
+            self.boton_banco_pruebas.config(state="disabled")
 
             self.resultado.config(
                 text="✗ Error al crear el AFN.",
@@ -863,6 +875,15 @@ class VentanaAFN:
                 "Error al crear AFN",
                 str(error)
             )
+
+    # BANCO AUTOMÁTICO DE PRUEBAS
+
+    def abrir_banco_pruebas(self):
+        logger.info("Se abrió el banco automático de pruebas")
+        if self.afn is None:
+            messagebox.showwarning("Advertencia", "Primero debe crear un AFN.")
+            return
+        VentanaBancoPruebas(self.ventana, self.afn)
 
     # CONVERTIR AFN A AFD
 

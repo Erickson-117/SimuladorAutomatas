@@ -107,3 +107,10 @@
 2026-10-29 17:12:19 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
 2026-10-29 17:12:19 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
 2026-10-29 17:12:21 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias
+2026-10-29 17:42:51 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 17:42:53 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 17:43:25 | INFO | interfaz.ventana_afn | Acción iniciada: crear_afn
+2026-10-29 17:43:26 | INFO | interfaz.ventana_afn | Se abrió el banco automático de pruebas
+2026-10-29 17:43:37 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 17:43:37 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 17:43:41 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias
