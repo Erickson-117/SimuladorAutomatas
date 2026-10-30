@@ -1,5 +1,9 @@
 import logging
 import tkinter as tk
+from tkinter import filedialog
+from pathlib import Path
+
+from informes.generador_informes import generar_informe_pdf
 from tkinter import ttk, messagebox
 
 from modelos.afd import AFD
@@ -450,6 +454,15 @@ class VentanaAFD:
             side="left",
             padx=(10, 0)
         )
+
+        fila_informe = ttk.Frame(derecha, style="Principal.TFrame")
+        fila_informe.pack(fill="x", padx=20, pady=(10, 0))
+        ttk.Button(
+            fila_informe,
+            text="Generar informe técnico PDF",
+            style="Secundario.TButton",
+            command=self.generar_informe_tecnico,
+        ).pack(side="left")
 
         # RESULTADO
 
@@ -1085,6 +1098,52 @@ class VentanaAFD:
         )
 
     # LIMPIAR RECORRIDO
+
+    def generar_informe_tecnico(self):
+        """Exporta la definición actual y una simulación opcional directamente a PDF."""
+        automata = self.afd
+        if automata is None:
+            messagebox.showwarning(
+                "Autómata no disponible",
+                "Primero crea y visualiza el AFD antes de generar el informe.",
+                parent=self.ventana,
+            )
+            return
+
+        destino = filedialog.asksaveasfilename(
+            parent=self.ventana,
+            title="Guardar informe técnico PDF",
+            defaultextension=".pdf",
+            filetypes=[("Documento PDF", "*.pdf")],
+            initialfile="informe_afd_tecnico.pdf",
+        )
+        if not destino:
+            return
+
+        valor_cadena = self.entrada_cadena.get().strip()
+        cadena = self.entrada_cadena.get() if valor_cadena else None
+        try:
+            generar_informe_pdf(automata, "AFD", destino, cadena)
+            messagebox.showinfo(
+                "Informe generado",
+                f"El informe técnico PDF se guardó correctamente en:\n{destino}",
+                parent=self.ventana,
+            )
+            logger.info("Informe técnico PDF de AFD exportado: %s", destino)
+        except ImportError as exc:
+            logger.exception("Falta una dependencia para generar el PDF")
+            messagebox.showerror(
+                "Dependencia necesaria",
+                "Para generar informes PDF instala ReportLab con este comando:\n\npython -m pip install reportlab\n\n" + str(exc),
+                parent=self.ventana,
+            )
+        except Exception as exc:
+            logger.exception("No se pudo generar el informe técnico PDF de AFD")
+            messagebox.showerror(
+                "Error al generar informe",
+                f"No fue posible crear el PDF.\n\n{exc}",
+                parent=self.ventana,
+            )
 
     def limpiar_recorrido(self):
 
