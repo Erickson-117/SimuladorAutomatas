@@ -40,10 +40,10 @@ class VentanaAnalisisLogs:
         encabezado = ttk.Frame(contenedor)
         encabezado.pack(fill="x", pady=(0, 12))
         ttk.Label(encabezado, text="Análisis inteligente de logs", font=("Segoe UI", 18, "bold")).pack(side="left")
-        ttk.Label(encabezado, text="", foreground="#667085").pack(side="left", padx=14, pady=(6, 0))
+        ttk.Label(encabezado, text="Diagnósticos basados en reglas", style="Subtitulo.TLabel").pack(side="left", padx=14, pady=(6, 0))
 
         resumen = ttk.Frame(contenedor)
-        resumen.pack(fill="x", pady=(0, 12))
+        resumen.pack(fill="x", pady=(0, 14))
         self.lbl_total = ttk.Label(resumen, text="Incidencias: 0", font=("Segoe UI", 11, "bold"))
         self.lbl_total.pack(side="left", padx=(0, 20))
         self.lbl_errores = ttk.Label(resumen, text="Errores: 0", foreground="#c0392b", font=("Segoe UI", 11, "bold"))
@@ -94,7 +94,11 @@ class VentanaAnalisisLogs:
         self.lbl_titulo.pack(anchor="w", fill="x", pady=(0, 8))
         self.lbl_meta = ttk.Label(detalle, text="", foreground="#667085", wraplength=1050)
         self.lbl_meta.pack(anchor="w", fill="x", pady=(0, 8))
-        self.texto_detalle = tk.Text(detalle, height=10, wrap="word", font=("Segoe UI", 10), relief="flat", bg="#ffffff", padx=10, pady=8)
+        self.texto_detalle = tk.Text(
+            detalle, height=10, wrap="word", font=("Segoe UI", 10),
+            relief="flat", padx=14, pady=12, spacing1=2, spacing3=4,
+            borderwidth=0,
+        )
         self.texto_detalle.pack(fill="both", expand=True)
         self.texto_detalle.configure(state="disabled")
         ttk.Label(contenedor, textvariable=self.estado_var, foreground="#667085").pack(fill="x", pady=(8, 0))

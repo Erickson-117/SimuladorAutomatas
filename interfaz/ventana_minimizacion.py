@@ -32,7 +32,13 @@ class VentanaMinimizacion:
         ttk.Button(barra, text="← Volver al AFD", command=self.cerrar).pack(side="left")
         ttk.Button(barra, text="Salir del programa", command=self.salir).pack(side="right")
         ttk.Label(base, text="Minimización de AFD", font=("Segoe UI", 21, "bold")).pack(anchor="w")
-        ttk.Label(base, text="Método de particiones: explora cada etapa y observa el autómata correspondiente.").pack(anchor="w", pady=(2, 14))
+        ttk.Label(
+            base,
+            text="Método de particiones · Explora cada etapa y observa cómo se reduce el autómata.",
+            style="Subtitulo.TLabel",
+        ).pack(anchor="w", pady=(2, 10))
+        self.progreso = ttk.Progressbar(base, mode="determinate", maximum=max(1, len(self.pasos)), value=1)
+        self.progreso.pack(fill="x", pady=(0, 12))
 
         contenido = ttk.Frame(base)
         contenido.pack(fill="both", expand=True)
@@ -40,29 +46,35 @@ class VentanaMinimizacion:
         contenido.columnconfigure(1, weight=5, uniform="min")
         contenido.rowconfigure(0, weight=1)
 
-        izquierda = ttk.LabelFrame(contenido, text="Proceso paso a paso", padding=14)
+        izquierda = ttk.LabelFrame(contenido, text="  PROCESO PASO A PASO  ", padding=14)
         izquierda.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
         self.etiqueta_paso = ttk.Label(izquierda, text="", font=("Segoe UI", 13, "bold"), wraplength=420)
         self.etiqueta_paso.pack(anchor="w", pady=(0, 10))
-        self.texto_paso = tk.Text(izquierda, wrap="word", font=("Consolas", 11), bg="#f8fafc", relief="flat", padx=12, pady=12)
-        self.texto_paso.pack(fill="both", expand=True)
+        self.texto_paso = tk.Text(
+            izquierda, wrap="word", font=("Segoe UI", 11), relief="flat",
+            padx=14, pady=14, spacing1=2, spacing3=4, borderwidth=0,
+        )
+        # Reservar primero el espacio de navegación evita que los botones
+        # queden ocultos cuando la ventana está maximizada o en fullscreen.
         navegacion = ttk.Frame(izquierda)
-        navegacion.pack(fill="x", pady=(12, 0))
+        navegacion.pack(side="bottom", fill="x", pady=(12, 0))
         self.boton_anterior = ttk.Button(navegacion, text="← Anterior", command=self.anterior)
         self.boton_anterior.pack(side="left")
         self.boton_siguiente = ttk.Button(navegacion, text="Siguiente →", command=self.siguiente)
         self.boton_siguiente.pack(side="right")
+        self.texto_paso.pack(side="top", fill="both", expand=True)
 
-        derecha = ttk.LabelFrame(contenido, text="Diagrama del paso actual", padding=8)
+        derecha = ttk.LabelFrame(contenido, text="  DIAGRAMA DEL PASO ACTUAL  ", padding=8)
         derecha.grid(row=0, column=1, sticky="nsew")
-        self.marco_grafico = tk.Frame(derecha, bg="white", highlightbackground="#d1d5db", highlightthickness=1)
+        self.marco_grafico = tk.Frame(derecha, highlightthickness=1, bd=0)
         self.marco_grafico.pack(fill="both", expand=True)
         self.visualizador = Visualizador(self.ventana, self.marco_grafico)
 
     def mostrar_paso(self, indice):
         self.paso_actual = max(0, min(indice, len(self.pasos) - 1))
         paso = self.pasos[self.paso_actual]
-        self.etiqueta_paso.config(text=f"Paso {self.paso_actual + 1} de {len(self.pasos)}: {paso['titulo']}")
+        self.etiqueta_paso.config(text=f"PASO {self.paso_actual + 1} DE {len(self.pasos)}  ·  {paso['titulo']}")
+        self.progreso.configure(value=self.paso_actual + 1)
         self.texto_paso.config(state="normal")
         self.texto_paso.delete("1.0", tk.END)
         self.texto_paso.insert(tk.END, paso["descripcion"])

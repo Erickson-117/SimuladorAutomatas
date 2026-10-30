@@ -45,11 +45,11 @@ class VentanaLogs:
         ).pack(side="left")
         ttk.Label(
             encabezado, text="Registro de eventos de la aplicación",
-            foreground="#667085"
+            style="Subtitulo.TLabel"
         ).pack(side="left", padx=14, pady=(6, 0))
 
         controles = ttk.Frame(contenedor)
-        controles.pack(fill="x", pady=(0, 10))
+        controles.pack(fill="x", pady=(0, 12))
         ttk.Label(controles, text="Buscar:").pack(side="left", padx=(0, 6))
         entrada = ttk.Entry(controles, textvariable=self.buscar_var, width=34)
         entrada.pack(side="left", padx=(0, 10))
@@ -83,7 +83,7 @@ class VentanaLogs:
             tabla.column("fecha", width=105, anchor="center")
             tabla.column("hora", width=85, anchor="center")
             tabla.column("modulo", width=160)
-            tabla.column("mensaje", width=560)
+            tabla.column("mensaje", width=560, minwidth=240, stretch=True)
             barra_y = ttk.Scrollbar(marco, orient="vertical", command=tabla.yview)
             barra_x = ttk.Scrollbar(marco, orient="horizontal", command=tabla.xview)
             tabla.configure(yscrollcommand=barra_y.set, xscrollcommand=barra_x.set)
@@ -118,12 +118,15 @@ class VentanaLogs:
             texto_busqueda = registro["linea"]
             if filtro and filtro.casefold() not in texto_busqueda.casefold():
                 continue
-            self.tablas[nivel].insert(
+            tabla = self.tablas[nivel]
+            indice = len(tabla.get_children())
+            tabla.insert(
                 "", "end",
                 values=(
                     registro["fecha"], registro["hora"],
                     registro["modulo"].strip(), registro["mensaje"]
-                )
+                ),
+                tags=("fila_par" if indice % 2 == 0 else "fila_impar",),
             )
 
         total = sum(len(tabla.get_children()) for tabla in self.tablas.values())

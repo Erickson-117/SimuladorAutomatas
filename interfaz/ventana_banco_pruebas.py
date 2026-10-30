@@ -30,7 +30,7 @@ class VentanaBancoPruebas:
         ).pack(anchor="w", pady=(5, 14))
 
         controles = ttk.Frame(contenedor)
-        controles.pack(fill="x", pady=(0, 10))
+        controles.pack(fill="x", pady=(0, 14))
         ttk.Label(controles, text=f"Alfabeto: {{{', '.join(sorted(self.afn.alfabeto))}}}").pack(side="left", padx=(0, 18))
         ttk.Label(controles, text="Longitud máxima:").pack(side="left")
         self.longitud = tk.IntVar(value=3)
@@ -39,8 +39,11 @@ class VentanaBancoPruebas:
         ttk.Checkbutton(controles, text="Incluir cadena vacía (ε)", variable=self.incluir_vacia).pack(side="left", padx=8)
         ttk.Button(controles, text="Ejecutar pruebas", style="Banco.TButton", command=self.ejecutar).pack(side="right")
 
-        self.resumen = ttk.Label(contenedor, text="Configura las pruebas y pulsa «Ejecutar pruebas».", style="Banco.TLabel")
-        self.resumen.pack(anchor="w", pady=(0, 10))
+        self.resumen = ttk.Label(
+            contenedor, text="Configura las pruebas y pulsa «Ejecutar pruebas».",
+            style="Banco.TLabel", wraplength=980,
+        )
+        self.resumen.pack(anchor="w", fill="x", pady=(0, 12))
 
         tabla_frame = ttk.Frame(contenedor)
         tabla_frame.pack(fill="both", expand=True)
@@ -52,7 +55,7 @@ class VentanaBancoPruebas:
         }
         for columna, (titulo, ancho) in encabezados.items():
             self.tabla.heading(columna, text=titulo)
-            self.tabla.column(columna, width=ancho, anchor="center")
+            self.tabla.column(columna, width=ancho, minwidth=90, anchor="center", stretch=(columna == "cadena"))
         self.tabla.tag_configure("coincide", foreground="#176b3a")
         self.tabla.tag_configure("discrepancia", foreground="#b42318")
         barra = ttk.Scrollbar(tabla_frame, orient="vertical", command=self.tabla.yview)
@@ -60,6 +63,8 @@ class VentanaBancoPruebas:
         self.tabla.pack(side="left", fill="both", expand=True)
         barra.pack(side="right", fill="y")
 
+        separador = ttk.Separator(contenedor, orient="horizontal")
+        separador.pack(fill="x", pady=(10, 8))
         self.nota = ttk.Label(
             contenedor,
             text="Nota: una ejecución sin discrepancias confirma la concordancia para estas cadenas, no constituye una demostración formal para todas las cadenas posibles.",

@@ -149,3 +149,17 @@
 2026-10-29 18:57:11 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
 2026-10-29 18:57:13 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
 2026-10-29 18:57:25 | INFO | interfaz.principal | El usuario cerró la aplicación
+2026-10-29 19:10:08 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 19:10:11 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 19:10:11 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 19:10:36 | INFO | interfaz.principal | El usuario cerró la aplicación
+2026-10-29 19:13:40 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 19:13:42 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 19:14:12 | INFO | interfaz.ventana_afn | Acción iniciada: crear_afn
+2026-10-29 19:14:13 | INFO | interfaz.ventana_afn | Acción iniciada: convertir_a_afd
+2026-10-29 19:14:14 | INFO | interfaz.ventana_afd | Acción iniciada: abrir_minimizacion
+2026-10-29 19:18:44 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 19:18:47 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 19:18:48 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 19:18:49 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
+2026-10-29 19:18:59 | INFO | interfaz.principal | El usuario cerró la aplicación
