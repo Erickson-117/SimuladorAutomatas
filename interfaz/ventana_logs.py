@@ -29,6 +29,8 @@ class VentanaLogs:
         self.tablas = {}
         self.crear_interfaz()
         self.cargar_logs()
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
         logger.info("Se abrió el visor de logs")
 
     def crear_interfaz(self):

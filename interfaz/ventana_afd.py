@@ -28,6 +28,8 @@ class VentanaAFD:
 
         self.configurar_estilos()
         self.crear_interfaz()
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
 
         if self.afd is not None:
             self.cargar_afd()

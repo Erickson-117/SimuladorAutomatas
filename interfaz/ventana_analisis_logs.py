@@ -31,6 +31,8 @@ class VentanaAnalisisLogs:
         self.estado_var = tk.StringVar(value="Preparado para analizar los registros")
         self._crear_interfaz()
         self.analizar()
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
 
     def _crear_interfaz(self):
         contenedor = ttk.Frame(self.ventana, padding=16)

@@ -21,6 +21,8 @@ class VentanaMinimizacion:
         self.afd_minimo, self.pasos = minimizar_afd(afd)
         self._construir_interfaz()
         self.mostrar_paso(0)
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
 
     def _construir_interfaz(self):
         base = ttk.Frame(self.ventana, padding=18)

@@ -9,6 +9,7 @@ from interfaz.visualizador import Visualizador
 from algoritmos.conversion import convertir_afn_a_afd
 from algoritmos.minimizacion import minimizar_afd
 from interfaz.ventana_minimizacion import VentanaMinimizacion
+from interfaz.tema import obtener_paleta
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,8 @@ class VentanaExpresionesRegulares:
         self.ultimo_afd = None
         self.configurar_estilos()
         self.crear_interfaz()
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
 
     def configurar_estilos(self):
         estilo = ttk.Style()
@@ -38,7 +41,7 @@ class VentanaExpresionesRegulares:
         estilo.configure("Regex.Fondo.TFrame", background="#f4f6f8")
         estilo.configure("Regex.Panel.TFrame", background="white")
         estilo.configure("Regex.Titulo.TLabel", background="#f4f6f8", foreground="#17202a", font=("Segoe UI", 22, "bold"))
-        estilo.configure("Regex.Subtitulo.TLabel", background="#f4f6f8", foreground="#68737d", font=("Segoe UI", 11))
+        estilo.configure("Regex.Subtitulo.TLabel", background="#f4f6f8", foreground=obtener_paleta()["texto_secundario"], font=("Segoe UI", 11))
         estilo.configure("Regex.Seccion.TLabel", background="white", foreground="#17202a", font=("Segoe UI", 13, "bold"))
         estilo.configure("Regex.TButton", font=("Segoe UI", 10, "bold"), padding=(16, 10))
         estilo.configure("Regex.TEntry", padding=8, font=("Consolas", 12))
@@ -88,7 +91,7 @@ class VentanaExpresionesRegulares:
             command=self.minimizar_afd
         ).pack(side="left", padx=(8, 0))
 
-        ttk.Label(panel, text="Ejemplos:  (0|1)*01   ·   a+b*   ·   [0-9]{2,4}", foreground="#68737d").pack(anchor="w", pady=(7, 20))
+        ttk.Label(panel, text="Ejemplos:  (0|1)*01   ·   a+b*   ·   [0-9]{2,4}", foreground=obtener_paleta()["texto_secundario"]).pack(anchor="w", pady=(7, 20))
 
         ttk.Separator(panel).pack(fill="x", pady=(0, 20))
         ttk.Label(panel, text="2. Cadena de prueba", style="Regex.Seccion.TLabel").pack(anchor="w")
@@ -106,7 +109,7 @@ class VentanaExpresionesRegulares:
             command=self.comparar_automatas,
         ).pack(side="left", padx=(8, 0))
 
-        self.resultado = ttk.Label(panel, text="Ingresa una expresión y prueba una cadena.", font=("Segoe UI", 13, "bold"), background="#f4f6f8", padding=16)
+        self.resultado = ttk.Label(panel, text="Ingresa una expresión y prueba una cadena.", font=("Segoe UI", 13, "bold"), background=obtener_paleta()["panel"], foreground=obtener_paleta()["texto"], padding=16)
         self.resultado.pack(fill="x", pady=(20, 12))
 
         ttk.Label(panel, text="Cómo interpretar los resultados", style="Regex.Seccion.TLabel").pack(anchor="w", pady=(8, 6))
@@ -128,9 +131,9 @@ class VentanaExpresionesRegulares:
             compilar_expresion(self.expresion_var.get())
         except ValueError as error:
             logger.warning("Expresión regular no válida: %s", error)
-            self.resultado.config(text=f"✗ {error}", foreground="#b42318")
+            self.resultado.config(text=f"✗ {error}", foreground=obtener_paleta()["error"])
             return False
-        self.resultado.config(text="✓ Expresión regular válida. Ya puedes probar cadenas.", foreground="#087f5b")
+        self.resultado.config(text="✓ Expresión regular válida. Ya puedes probar cadenas.", foreground=obtener_paleta()["correcto"])
         return True
 
     def probar_cadena(self):
@@ -141,12 +144,12 @@ class VentanaExpresionesRegulares:
             aceptada = validar_cadena(expresion, cadena)
         except ValueError as error:
             logger.warning("No se pudo validar la cadena con la expresión regular: %s", error)
-            self.resultado.config(text=f"✗ {error}", foreground="#b42318")
+            self.resultado.config(text=f"✗ {error}", foreground=obtener_paleta()["error"])
             return
         if aceptada:
-            self.resultado.config(text=f"✓ CADENA ACEPTADA: «{cadena}» coincide con la expresión.", foreground="#087f5b")
+            self.resultado.config(text=f"✓ CADENA ACEPTADA: «{cadena}» coincide con la expresión.", foreground=obtener_paleta()["correcto"])
         else:
-            self.resultado.config(text=f"✗ CADENA RECHAZADA: «{cadena}» no coincide con la expresión.", foreground="#b42318")
+            self.resultado.config(text=f"✗ CADENA RECHAZADA: «{cadena}» no coincide con la expresión.", foreground=obtener_paleta()["error"])
 
 
     def comparar_automatas(self):
@@ -169,13 +172,14 @@ class VentanaExpresionesRegulares:
         except (ValueError, TypeError, KeyError) as error:
             self.resultado.config(
                 text=f"✗ No se pudo comparar los autómatas: {error}",
-                foreground="#b42318",
+                foreground=obtener_paleta()["error"],
             )
             return
 
         coinciden = acepta_afn == acepta_afd == acepta_minimo
         estado = "✓ Los tres autómatas coinciden." if coinciden else "⚠ Hay resultados diferentes."
-        color = "#087f5b" if coinciden else "#b42318"
+        paleta = obtener_paleta()
+        color = paleta["correcto"] if coinciden else paleta["error"]
         self.resultado.config(
             text=(
                 f"{estado} Cadena «{cadena}»: "
@@ -309,8 +313,8 @@ class VentanaExpresionesRegulares:
             texto.grid(row=0, column=0, sticky="nsew")
             barra_scroll.grid(row=0, column=1, sticky="ns")
             texto.tag_configure("titulo", font=("Segoe UI", 11, "bold"), foreground="#175cd3", spacing3=8)
-            texto.tag_configure("resultado_ok", font=("Consolas", 10, "bold"), foreground="#087f5b")
-            texto.tag_configure("resultado_error", font=("Consolas", 10, "bold"), foreground="#b42318")
+            texto.tag_configure("resultado_ok", font=("Consolas", 10, "bold"), foreground=obtener_paleta()["correcto"])
+            texto.tag_configure("resultado_error", font=("Consolas", 10, "bold"), foreground=obtener_paleta()["error"])
 
             texto.insert(tk.END, f"RECORRIDO DEL {titulo.upper()}\n", "titulo")
             texto.insert(tk.END, "─" * 42 + "\n\n")
@@ -335,7 +339,7 @@ class VentanaExpresionesRegulares:
             afn = generar_afn_thompson(expresion)
         except ValueError as error:
             logger.warning("No se pudo generar el AFN desde la expresión regular: %s", error)
-            self.resultado.config(text=f"✗ No se pudo generar el AFN: {error}", foreground="#b42318")
+            self.resultado.config(text=f"✗ No se pudo generar el AFN: {error}", foreground=obtener_paleta()["error"])
             return
 
         self.ultimo_afn = afn
@@ -354,7 +358,7 @@ class VentanaExpresionesRegulares:
         )
         self.resultado.config(
             text=f"✓ AFN generado: {len(afn.estados)} estados, alfabeto {sorted(afn.alfabeto)}.",
-            foreground="#087f5b",
+            foreground=obtener_paleta()["correcto"],
         )
 
 
@@ -371,7 +375,7 @@ class VentanaExpresionesRegulares:
             logger.error("No se pudo convertir la expresión a AFD: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo convertir a AFD: {error}",
-                foreground="#b42318",
+                foreground=obtener_paleta()["error"],
             )
             return
         self.ultimo_afn = afn
@@ -386,7 +390,7 @@ class VentanaExpresionesRegulares:
         self.resultado.config(
             text=(f"✓ AFD generado: {len(afd.estados)} estados, "
                   f"alfabeto {sorted(afd.alfabeto)}."),
-            foreground="#087f5b",
+            foreground=obtener_paleta()["correcto"],
         )
 
     def minimizar_afd(self):
@@ -400,14 +404,14 @@ class VentanaExpresionesRegulares:
             logger.error("No se pudo preparar el AFD para minimizar: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo preparar el AFD para minimizar: {error}",
-                foreground="#b42318",
+                foreground=obtener_paleta()["error"],
             )
             return
         self.ultimo_afn = afn
         self.ultimo_afd = afd
         self.resultado.config(
             text=(f"✓ AFD preparado para minimización: {len(afd.estados)} estados."),
-            foreground="#087f5b",
+            foreground=obtener_paleta()["correcto"],
         )
         try:
             VentanaMinimizacion(self.ventana, afd)
@@ -415,7 +419,7 @@ class VentanaExpresionesRegulares:
             logger.error("No se pudo abrir la minimización del AFD: %s", error)
             self.resultado.config(
                 text=f"✗ No se pudo minimizar el AFD: {error}",
-                foreground="#b42318",
+                foreground=obtener_paleta()["error"],
             )
 
     def regresar_a_principal(self):

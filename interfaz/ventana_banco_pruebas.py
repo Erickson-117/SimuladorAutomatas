@@ -66,6 +66,8 @@ class VentanaBancoPruebas:
             style="Banco.TLabel", wraplength=950,
         )
         self.nota.pack(anchor="w", pady=(10, 0))
+        from interfaz.tema import registrar_ventana
+        registrar_ventana(self.ventana)
 
     @staticmethod
     def texto_resultado(aceptada):

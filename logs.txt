@@ -128,3 +128,15 @@
 2026-10-29 18:20:41 | INFO | interfaz.principal | Tema visual cambiado a claro
 2026-10-29 18:20:41 | INFO | interfaz.principal | Tema visual cambiado a oscuro
 2026-10-29 18:20:57 | INFO | interfaz.principal | El usuario cerró la aplicación
+2026-10-29 18:39:29 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:39:31 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 18:39:34 | INFO | interfaz.principal | Se abrió el módulo de creación de AFD
+2026-10-29 18:39:35 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 18:39:38 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 18:39:38 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 18:39:42 | INFO | interfaz.ventana_logs | Validación del archivo de logs completada: 136 válidos, 0 inválidos
+2026-10-29 18:39:43 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias
+2026-10-29 18:39:58 | INFO | interfaz.principal | Tema visual cambiado a claro
+2026-10-29 18:39:59 | INFO | interfaz.principal | Tema visual cambiado a oscuro
+2026-10-29 18:40:01 | INFO | interfaz.principal | Tema visual cambiado a claro
+2026-10-29 18:40:06 | INFO | interfaz.principal | El usuario cerró la aplicación

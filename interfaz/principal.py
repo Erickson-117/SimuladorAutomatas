@@ -6,7 +6,7 @@ from interfaz.ventana_afd import VentanaAFD
 from interfaz.ventana_afn import VentanaAFN
 from interfaz.ventana_regex import VentanaExpresionesRegulares
 from interfaz.ventana_logs import VentanaLogs
-from interfaz.tema import obtener_paleta
+from interfaz.tema import obtener_paleta, cambiar_tema_global
 
 logger = logging.getLogger(__name__)
 
@@ -171,6 +171,7 @@ class Aplicacion:
     def aplicar_tema(self):
         self.p = obtener_paleta(self.tema_actual)
         p = self.p
+        cambiar_tema_global(self.tema_actual)
         self.ventana.configure(bg=p["fondo"])
         self.raiz.configure(bg=p["fondo"])
         self.sidebar.configure(bg=p["panel"])
