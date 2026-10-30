@@ -114,3 +114,17 @@
 2026-10-29 17:43:37 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
 2026-10-29 17:43:37 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
 2026-10-29 17:43:41 | INFO | interfaz.ventana_analisis_logs | Análisis de logs completado: 20 incidencias
+2026-10-29 18:10:55 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:18:09 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:18:14 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 18:18:19 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 18:18:19 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 18:19:58 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:20:14 | INFO | interfaz.principal | Se abrió el módulo de creación de AFN
+2026-10-29 18:20:21 | INFO | interfaz.principal | Tema visual cambiado a claro
+2026-10-29 18:20:24 | INFO | interfaz.principal | Tema visual cambiado a oscuro
+2026-10-29 18:20:27 | INFO | interfaz.principal | El usuario cerró la aplicación
+2026-10-29 18:20:36 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:20:41 | INFO | interfaz.principal | Tema visual cambiado a claro
+2026-10-29 18:20:41 | INFO | interfaz.principal | Tema visual cambiado a oscuro
+2026-10-29 18:20:57 | INFO | interfaz.principal | El usuario cerró la aplicación
