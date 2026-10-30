@@ -22,8 +22,8 @@ class VentanaAnalisisLogs:
         self.diagnosticos_visibles = []
         self.ventana = tk.Toplevel(ventana_padre)
         self.ventana.title("Análisis de logs - Simulador de Autómatas")
-        self.ventana.geometry("1180x720")
-        self.ventana.minsize(850, 560)
+        self.ventana.geometry("1180x740")
+        self.ventana.minsize(850, 580)
         self.ventana.configure(bg="#f4f6f8")
         self.ventana.transient(ventana_padre)
         self.filtro_nivel = tk.StringVar(value="Todos")
@@ -94,12 +94,21 @@ class VentanaAnalisisLogs:
         self.lbl_titulo.pack(anchor="w", fill="x", pady=(0, 8))
         self.lbl_meta = ttk.Label(detalle, text="", foreground="#667085", wraplength=1050)
         self.lbl_meta.pack(anchor="w", fill="x", pady=(0, 8))
+        marco_texto = ttk.Frame(detalle)
+        marco_texto.pack(fill="both", expand=True)
         self.texto_detalle = tk.Text(
-            detalle, height=10, wrap="word", font=("Segoe UI", 10),
+            marco_texto, height=8, wrap="word", font=("Segoe UI", 10),
             relief="flat", padx=14, pady=12, spacing1=2, spacing3=4,
-            borderwidth=0,
+            borderwidth=0, undo=False,
         )
-        self.texto_detalle.pack(fill="both", expand=True)
+        barra_detalle = ttk.Scrollbar(
+            marco_texto, orient="vertical", command=self.texto_detalle.yview
+        )
+        self.texto_detalle.configure(yscrollcommand=barra_detalle.set)
+        self.texto_detalle.grid(row=0, column=0, sticky="nsew")
+        barra_detalle.grid(row=0, column=1, sticky="ns")
+        marco_texto.rowconfigure(0, weight=1)
+        marco_texto.columnconfigure(0, weight=1)
         self.texto_detalle.configure(state="disabled")
         ttk.Label(contenedor, textvariable=self.estado_var, foreground="#667085").pack(fill="x", pady=(8, 0))
 

@@ -19,8 +19,8 @@ class VentanaLogs:
         self.ruta_logs = Path(__file__).resolve().parent.parent / "logs.txt"
         self.ventana = tk.Toplevel(ventana_padre)
         self.ventana.title("Visor de logs - Simulador de Autómatas")
-        self.ventana.geometry("1050x620")
-        self.ventana.minsize(760, 440)
+        self.ventana.geometry("1120x660")
+        self.ventana.minsize(800, 480)
         self.ventana.configure(bg="#f4f6f8")
         self.ventana.transient(ventana_padre)
 
@@ -95,8 +95,8 @@ class VentanaLogs:
             self.tablas[nivel] = tabla
 
         ttk.Label(
-            contenedor, textvariable=self.estado_var, foreground="#667085"
-        ).pack(fill="x", pady=(8, 0))
+            contenedor, textvariable=self.estado_var, style="Subtitulo.TLabel"
+        ).pack(fill="x", pady=(10, 0))
 
     def cargar_logs(self):
         for tabla in self.tablas.values():

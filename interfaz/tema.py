@@ -87,6 +87,10 @@ def _configurar_estilos(root, p):
             "Regex.Fondo.TFrame": p["fondo"],
             "Regex.Panel.TFrame": p["panel"],
             "Comparacion.TFrame": p["fondo"],
+            "Logs.TFrame": p["fondo"],
+            "Logs.Panel.TFrame": p["panel"],
+            "AnalisisLogs.TFrame": p["fondo"],
+            "Banco.Panel.TFrame": p["panel"],
         }
         for nombre, fondo in estilos_frame.items():
             estilo.configure(nombre, background=fondo)
@@ -100,7 +104,10 @@ def _configurar_estilos(root, p):
             "Comparacion.TLabel": (p["fondo"], p["texto"]),
             "Comparacion.Titulo.TLabel": (p["fondo"], p["texto"]),
             "Comparacion.Subtitulo.TLabel": (p["fondo"], p["texto_secundario"]),
-            "Banco.TLabel": (p["panel"], p["texto"]),
+            "Banco.TLabel": (p["fondo"], p["texto"]),
+            "Logs.TLabel": (p["fondo"], p["texto"]),
+            "Logs.Subtitulo.TLabel": (p["fondo"], p["texto_secundario"]),
+            "AnalisisLogs.TLabel": (p["fondo"], p["texto"]),
             "BancoTitulo.TLabel": (p["fondo"], p["texto"]),
         }
         for nombre, (fondo, texto) in estilos_label.items():
@@ -138,7 +145,7 @@ def _recorrer(widget, p):
             # Las opciones directas de algunos ttk.Label prevalecen sobre el estilo.
             try:
                 estilo_widget = str(widget.cget("style"))
-                fondo = p["panel"] if estilo_widget in ("Regex.Seccion.TLabel", "Banco.TLabel") else p["fondo"]
+                fondo = p["panel"] if estilo_widget == "Regex.Seccion.TLabel" else p["fondo"]
                 widget.configure(background=fondo, foreground=p["texto"])
             except tk.TclError:
                 pass
