@@ -144,6 +144,12 @@ def _recorrer(widget, p):
                 pass
         elif isinstance(widget, tk.Canvas):
             widget.configure(bg=p["panel"], highlightbackground=p["borde"])
+            # Notifica a los visualizadores para que redibujen los diagramas
+            # existentes con los colores del tema recién seleccionado.
+            try:
+                widget.event_generate("<<TemaCambiado>>", when="tail")
+            except tk.TclError:
+                pass
         elif isinstance(widget, (tk.Frame, tk.LabelFrame)):
             widget.configure(bg=p["fondo"], highlightbackground=p["borde"])
         elif isinstance(widget, tk.Label):

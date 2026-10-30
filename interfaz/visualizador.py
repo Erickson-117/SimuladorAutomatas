@@ -1,6 +1,8 @@
 import tkinter as tk
 import math
 
+from interfaz.tema import obtener_paleta
+
 
 class Visualizador:
 
@@ -14,16 +16,9 @@ class Visualizador:
             self.ventana.minsize(800, 600)
             self.ventana.configure(bg="#f4f6f8")
 
-        # Colores
-        self.color_fondo = "#f4f6f8"
-        self.color_canvas = "#ffffff"
-        self.color_estado = "#ffffff"
-        self.color_estado_inicial = "#e8f1ff"
-        self.color_estado_final = "#e8f7ee"
-        self.color_borde = "#374151"
-        self.color_linea = "#4b5563"
-        self.color_texto = "#1f2937"
-        self.color_etiqueta = "#2563eb"
+        # Colores sincronizados con el tema global.
+        self._ultimo_diagrama = None
+        self._actualizar_colores()
 
         if contenedor is None:
             # Encabezado y marco propios cuando se usa ventana independiente.
@@ -59,6 +54,30 @@ class Visualizador:
             padx=10,
             pady=10
         )
+        self.canvas.bind("<<TemaCambiado>>", self._al_cambiar_tema, add="+")
+        self._actualizar_colores()
+        self.canvas.configure(bg=self.color_canvas, highlightbackground=self.color_borde)
+
+    def _actualizar_colores(self):
+        """Actualiza la paleta del diagrama según el tema global activo."""
+        p = obtener_paleta()
+        self.color_fondo = p["fondo"]
+        self.color_canvas = p["panel"]
+        self.color_estado = p["panel_secundario"]
+        tema = __import__("interfaz.tema", fromlist=["obtener_tema_actual"]).obtener_tema_actual()
+        self.color_estado_inicial = "#203B68" if tema == "oscuro" else "#DCEAFE"
+        self.color_estado_final = "#214B35" if tema == "oscuro" else "#E8F7EE"
+        self.color_borde = p["borde"]
+        self.color_linea = p["texto_secundario"]
+        self.color_texto = p["texto"]
+        self.color_etiqueta = p["acento"]
+
+    def _al_cambiar_tema(self, _evento=None):
+        """Redibuja el último autómata para aplicar los colores nuevos."""
+        self._actualizar_colores()
+        self.canvas.configure(bg=self.color_canvas, highlightbackground=self.color_borde)
+        if self._ultimo_diagrama:
+            self.dibujar_automata(*self._ultimo_diagrama)
 
     # DIBUJAR AUTOMATA
 
@@ -70,6 +89,10 @@ class Visualizador:
         estados_finales,
         estados_activos=None
     ):
+
+        self._ultimo_diagrama = (
+            estados, transiciones, estado_inicial, estados_finales, estados_activos
+        )
 
         # Asegurar que Tkinter ya calculó el tamaño real del canvas antes
         # de ubicar los estados. Si se dibuja inmediatamente al crear la
@@ -556,7 +579,7 @@ class Visualizador:
 
             # El estado activo se resalta durante la animación.
             if estado in estados_activos:
-                relleno = "#ffd166"
+                relleno = "#FBBF24"
             elif estado in estados_finales:
 
                 relleno = self.color_estado_final
@@ -638,5 +661,5 @@ class Visualizador:
             y - 18,
             text="Inicio",
             font=("Segoe UI", 9),
-            fill="#6b7280"
+            fill=self.color_linea
         )

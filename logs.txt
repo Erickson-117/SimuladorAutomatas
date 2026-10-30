@@ -140,3 +140,12 @@
 2026-10-29 18:39:59 | INFO | interfaz.principal | Tema visual cambiado a oscuro
 2026-10-29 18:40:01 | INFO | interfaz.principal | Tema visual cambiado a claro
 2026-10-29 18:40:06 | INFO | interfaz.principal | El usuario cerró la aplicación
+2026-10-29 18:57:03 | INFO | __main__ | Inicio del Simulador de Autómatas
+2026-10-29 18:57:06 | INFO | interfaz.principal | Se solicitó abrir el visor de logs
+2026-10-29 18:57:06 | INFO | interfaz.ventana_logs | Se abrió el visor de logs
+2026-10-29 18:57:08 | INFO | interfaz.principal | Se abrió el módulo de expresiones regulares
+2026-10-29 18:57:09 | INFO | interfaz.ventana_regex | Acción iniciada: validar_expresion
+2026-10-29 18:57:10 | INFO | interfaz.ventana_regex | Acción iniciada: generar_afn
+2026-10-29 18:57:11 | INFO | interfaz.ventana_regex | Acción iniciada: convertir_a_afd
+2026-10-29 18:57:13 | INFO | interfaz.ventana_regex | Acción iniciada: minimizar_afd
+2026-10-29 18:57:25 | INFO | interfaz.principal | El usuario cerró la aplicación
