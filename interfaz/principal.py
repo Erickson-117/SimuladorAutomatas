@@ -100,7 +100,7 @@ class Aplicacion:
             command=self.salir,
         )
         self.salir_btn.pack(fill="x", pady=(0, 12))
-        self.footer_text = tk.Label(self.sidebar_footer, text="Proyecto académico\nAutómatas y lenguajes formales", font=("Segoe UI", 8), justify="left", anchor="w")
+        self.footer_text = tk.Label(self.sidebar_footer, text="", font=("Segoe UI", 8), justify="left", anchor="w")
         self.footer_text.pack(fill="x")
 
         # Área de contenido
