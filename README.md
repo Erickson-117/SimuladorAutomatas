@@ -64,4 +64,4 @@ python -m pytest -v
 
 - Si PowerShell no permite activar el entorno virtual, puedes ejecutar los comandos de instalación y ejecución usando directamente `.\.venv\Scripts\python.exe`.
 - Para generar informes PDF, es necesario que ReportLab esté instalado correctamente.
-- También puedes utilizar el instalador de Windows cuando esté disponible en la sección **Releases** del repositorio.
+
